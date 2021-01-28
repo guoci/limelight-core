@@ -233,10 +233,6 @@ export class ModExperimentPage_Display {
 	 */
     private _displayModDataOnPage_ActualRender() {
 
-        //  Force Re-render of Graphic for now
-        this._renderedReactComponent_ModExperimentPage_Experiment_Name_Graphic_Component.forceReRender();
-
-
         //  Get for First Condition Group - Hard Code to First Condition Group for now
         let conditions_for_condition_group_with_their_project_search_ids : Array<ModExperiment_Create_conditions_with_their_project_search_ids_for_condition_groupResultEntry> = undefined;
         {

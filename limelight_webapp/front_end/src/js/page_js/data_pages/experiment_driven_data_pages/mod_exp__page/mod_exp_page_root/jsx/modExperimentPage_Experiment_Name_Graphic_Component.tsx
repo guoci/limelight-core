@@ -99,13 +99,6 @@ export class ModExperimentPage_Experiment_Name_Graphic_Component extends React.C
     /**
      *
      */
-    forceReRender() {
-       this.setState({ fakeObj_ForForceReRender: {} })
-    }
-
-    /**
-     *
-     */
     private _mainCell_getHoverContents( params : ExperimentConditions_GraphicRepresentation_MainCell_getHoverContents_Params ) {
 
         const conditionIdPath = params.conditionIdPath;
@@ -123,6 +116,21 @@ export class ModExperimentPage_Experiment_Name_Graphic_Component extends React.C
      *
      */
     private _selectedConditionsChanged_Callback( params : ExperimentConditions_GraphicRepresentation_SelectedCells_SelectedConditionsChanged_CallbackParams ) : void {
+
+        //  Set object used by Experiment_SingleExperiment_ConditionsGraphicRepresentation
+
+        const graphicRepresentation_SelectedCells : ExperimentConditions_GraphicRepresentation_SelectedCells = (
+            create_ExperimentConditions_GraphicRepresentation_SelectedCells__YES__ExperimentPageCommon_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass({ // External Function
+
+                //  Will be used for population of ExperimentConditions_GraphicRepresentation_SelectedCells_IF
+                // Will be Updated for changes in Selected Conditions
+                experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : this.props.experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass,
+                conditionGroupsContainer : this.props.conditionGroupsContainer,
+                selectedConditionsChanged_Callback : this._selectedConditionsChanged_Callback_BindThis
+            })
+        );
+
+        this.setState({ graphicRepresentation_SelectedCells });
 
         // Trigger update of page
 
