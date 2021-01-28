@@ -35,6 +35,10 @@
 
    <%@ include file="/WEB-INF/jsp/jsp_includes_body_start_body_end/body_after_header_include_data_pages.jsp" %>
    
+   <h3>
+		Modifications View
+	</h3>
+	
    	<%--  <div> to contain main display --%>
    
    	<div id="mod_experiment_data_page_overall_enclosing_block_div" >
