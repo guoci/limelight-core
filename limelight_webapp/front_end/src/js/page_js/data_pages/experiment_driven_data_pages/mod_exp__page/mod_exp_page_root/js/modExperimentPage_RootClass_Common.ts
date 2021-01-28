@@ -62,6 +62,7 @@ import { Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass 
 //  Import for typing only
 import { Experiment_DataPages_LoggedInUser_CommonObjectsFactory } from 'page_js/data_pages/experiment_data_pages_common/experiment_DataPages_LoggedInUser_CommonObjectsFactory';
 import { SearchDataLookupParameters_Root } from 'page_js/data_pages/data_pages__common_data_classes/searchDataLookupParameters';
+import {ModExperimentPage_Display} from "page_js/data_pages/experiment_driven_data_pages/mod_exp__page/mod_exp_page_root/js/modExperimentPage_Display";
 
 /**
  * 
@@ -80,7 +81,7 @@ export class ModExperimentPage_RootClass_Common {
 	private _getExerimentMainDataFromPage : GetExerimentMainDataFromPage;
 	private _getSearchDataLookupParametersFromPage : GetSearchDataLookupParametersFromPage;
 	private _loadCoreData_ProjectSearchIds_Based : LoadCoreData_ProjectSearchIds_Based;
-	// private _modExperimentPage_Display : ModExperimentPage_Display;
+	private _modExperimentPage_Display : ModExperimentPage_Display;
 
 	/**
 	 * @param experiment_DataPages_LoggedInUser_CommonObjectsFactory - Optional
@@ -148,12 +149,6 @@ export class ModExperimentPage_RootClass_Common {
 		
 		// //  Clear the referrer flag from URL, if it exists
 		this._centralPageStateManager.clearReferrerFlagFromURL();
-		
-		// let testPageComponent = new TestPageComponent( { centralPageStateManager : this._centralPageStateManager } );
-		// testPageComponent.initialize();
-		
-		// testPageComponent.setValue( { key : 'b', value : 'rtw' } );
-
 
 		{
 			const mainPagesPopulateHeader = new MainPagesPopulateHeader();
@@ -176,12 +171,6 @@ export class ModExperimentPage_RootClass_Common {
         const experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData = ( 
             create_experimentConditions_GraphicRepresentation_PropsData({ conditionGroupsContainer, conditionGroupsDataContainer }) //  Call External Function
 		);
-		
-		////  !!!   Not using existing Search Details Block
-		
-		// this._searchDetailsBlockDataMgmtProcessing.storeSearchDetails_Filters_AnnTypeDisplay_Root( {
-		// 	searchDetails_Filters_AnnTypeDisplay_Root : searchDataLookupParametersFromPage.search_data_lookup_parameters_at_page_load } ); 
-
 
 		//  !!!!!!!!  Getting the projectSearchIds from the experiment
 		
@@ -210,23 +199,21 @@ export class ModExperimentPage_RootClass_Common {
 			try {
 				//  Continue processing
 						
-				// this._modExperimentPage_Display = new ModExperimentPage_Display({
-				// 	dataPageStateManager_DataFrom_Server : this._dataPageStateManager_DataFrom_Server,
-				// 	experiment_DataPages_LoggedInUser_CommonObjectsFactory : this._experiment_DataPages_LoggedInUser_CommonObjectsFactory,
-				// 	experimentId,
-				// 	experimentName,
-				// 	projectSearchIds,
-				// 	searchDataLookupParamsRoot,
-				// 	conditionGroupsContainer,
-				// 	conditionGroupsDataContainer,
-				// 	experimentConditions_GraphicRepresentation_PropsData,
-				// 	// centralPageStateManager : this._centralPageStateManager,
-				// 	experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : this._experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass,
-				// 	modGrouping_CentralStateManagerObjectClass : this._modGrouping_CentralStateManagerObjectClass,
-				// 	singleMod_ExpPage_CentralStateManagerObjectClass : this._singleMod_ExpPage_CentralStateManagerObjectClass
-				// });
-				//
-				// this._modExperimentPage_Display.initialize();
+				this._modExperimentPage_Display = new ModExperimentPage_Display({
+					dataPageStateManager_DataFrom_Server : this._dataPageStateManager_DataFrom_Server,
+					experiment_DataPages_LoggedInUser_CommonObjectsFactory : this._experiment_DataPages_LoggedInUser_CommonObjectsFactory,
+					experimentId,
+					experimentName,
+					projectSearchIds,
+					searchDataLookupParamsRoot,
+					conditionGroupsContainer,
+					conditionGroupsDataContainer,
+					experimentConditions_GraphicRepresentation_PropsData,
+					// centralPageStateManager : this._centralPageStateManager,
+					experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : this._experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass,
+				});
+
+				this._modExperimentPage_Display.initialize();
 
 			} catch( e ) {
 				console.warn("_loadCoreData_ProjectSearchIds_Based_Promise.then: exception: " + e );

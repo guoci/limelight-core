@@ -962,8 +962,8 @@ class Experiment extends React.Component< Experiment_Props, Experiment_State > {
 
                             <a href={ proteinLink }>[Proteins]</a>
 
-                            {/*<span>&nbsp;</span>*/}
-                            {/*<a href={ modViewLink }>[Modifications]</a>*/}
+                            <span>&nbsp;</span>
+                            <a href={ modViewLink }>[Modifications]</a>
 
                             { deleteIcon }
 

@@ -35,14 +35,15 @@
 
    <%@ include file="/WEB-INF/jsp/jsp_includes_body_start_body_end/body_after_header_include_data_pages.jsp" %>
    
-      <%--   REMOVE this when have working page   --%>
-   	<div style="margin-top: 20px; font-weight: bold">
-		Experiment Mod Page Shell.  This is only a Page Stub with NO functionality.    	
-   	</div>
-   
    	<%--  <div> to contain main display --%>
    
-   	<div id="mod_experiment_data_page_overall_enclosing_block_div" style="display: none;"> <%--  Hidden until Javascript has loaded and displays it --%>
+   	<div id="mod_experiment_data_page_overall_enclosing_block_div" >
+   	
+   		<%--  <div> to contain Experiment Name and Experiment Graphic display --%>
+   		
+   		<div id="mod_experiment_data_page_experiment_name_graphic_container_block_div" >
+   		</div>
+   
    	</div>
    	
    <%@ include file="/WEB-INF/jsp/jsp_includes_body_start_body_end/body_before_footer_include_data_pages.jsp" %>
