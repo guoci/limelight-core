@@ -38,9 +38,9 @@ import {modificationMass_CommonRounding_ReturnNumber,} from 'page_js/data_pages/
 
 import {Experiment_ConditionGroupsContainer} from 'page_js/data_pages/experiment_data_pages_common/experiment_ConditionGroupsContainer_AndChildren_Classes';
 import {
-    ConditionGroupsDataContainer,
-    ProcessAllDataEntries_callback_Param
-} from 'page_js/data_pages/experiment_data_pages_common/conditionGroupsDataContainer_Class';
+    Experiment_ConditionGroupsDataContainer,
+    Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param
+} from 'page_js/data_pages/experiment_data_pages_common/experiment_conditionGroupsDataContainer_Class';
 
 import {ProteinView_LoadedDataCommonHolder} from 'page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_common/proteinView_LoadedDataCommonHolder';
 import {ProteinViewPage_LoadedDataPerProjectSearchIdHolder} from 'page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_common/proteinView_LoadedDataPerProjectSearchIdHolder';
@@ -125,6 +125,10 @@ import {PeptidePage_Display_MainContent_Component_Props} from "page_js/data_page
 import {PeptideUnique_UserSelection} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/peptide_unique_user_filter_selection/jsx/peptideUnique_UserSelection";
 import {PeptideUnique_UserSelection_ComponentData} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/peptide_unique_user_filter_selection/js/peptideUnique_UserSelection_ComponentData";
 import {peptideUnique_UserSelection_BuildData_ForReactComponent} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/peptide_unique_user_filter_selection/js/peptideUnique_UserSelection_BuildData_ForReactComponent";
+import {
+    Experiment_ConditionGroupLabel_and_ConditionLabel,
+    experiment_getConditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId
+} from "page_js/data_pages/experiment_data_pages_common/experiment_Get_ConditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId";
 
 
 ////
@@ -170,7 +174,7 @@ export class ProteinExperimentPage_SingleProtein_MainContent_Component_Props_Pro
     proteinDescriptions : string
     proteinSequenceString : string
     conditionGroupsContainer : Experiment_ConditionGroupsContainer
-    conditionGroupsDataContainer : ConditionGroupsDataContainer
+    conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer
     loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>
     loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
     dataPageStateManager : DataPageStateManager
@@ -340,7 +344,7 @@ export class ProteinExperimentPage_SingleProtein_MainContent_Component extends R
             {
                 const projectSearchIds_Selected_Set = new Set();
 
-                const processAllDataEntries_Callback = ( param : ProcessAllDataEntries_callback_Param ) => {
+                const processAllDataEntries_Callback = ( param : Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param ) => {
 
                     const data = param.data;
 
@@ -601,7 +605,7 @@ export class ProteinExperimentPage_SingleProtein_MainContent_Component extends R
             {
                 const projectSearchIds_Selected_Set = new Set();
 
-                const processAllDataEntries_Callback = ( param : ProcessAllDataEntries_callback_Param ) => {
+                const processAllDataEntries_Callback = ( param : Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param ) => {
 
                     const data = param.data;
 
@@ -1037,113 +1041,19 @@ export class ProteinExperimentPage_SingleProtein_MainContent_Component extends R
         conditionGroupLabels_Only_InSameOrder : Array<string>
     } {
 
-        const conditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId : Map<number, Array<DownloadPSMs_PerConditionGroupConditionData>> = new Map();
+        const {
+            conditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId,
+            conditionGroupLabels_Only_InSameOrder
+        } =
+            experiment_getConditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId({
+                conditionGroupsContainer : this.props.propsValue.conditionGroupsContainer,
+                conditionGroupsDataContainer : this.props.propsValue.conditionGroupsDataContainer
+            });
 
-        let conditionGroupLabels_Only_InSameOrder : Array<string> = undefined;
-
-        {
-            let firstDataEntry = true;
-                
-            const processAllDataEntries_Callback = ( params : ProcessAllDataEntries_callback_Param ) => {
-                try {
-                    const data = params.data
-                    const innerData = data.data;
-
-                    if ( ! innerData ) {
-                        // innerData not populated
-                        
-                        return; //  EARLY RETURN
-                    }
-
-                    const projectSearchIds : Set<number> = innerData.projectSearchIds;
-
-                    if ( ( ! projectSearchIds ) || ( projectSearchIds.size === 0 ) ) {
-                        // innerData.projectSearchIds not populated
-                        
-                        return; //  EARLY RETURN
-                    }
-
-                    const conditionIds_Path = params.conditionIds_Path;
-
-                    //  Get Condition Group Label and Condition Label
-
-                    const conditionGroupLabel_and_ConditionLabel_Data : Array<DownloadPSMs_PerConditionGroupConditionData> = [];
-
-                    const conditionGroupLabels_Only : Array<string> = [];
-
-                    for ( const conditionIds_Path_Entry of conditionIds_Path ) {
-
-                        let conditionGroupLabel = undefined;
-                        let conditionLabel = undefined;
-
-                        for ( const conditionGroup of this.props.propsValue.conditionGroupsContainer.conditionGroups ) {
-                            
-                            for ( const condition of conditionGroup.conditions ) {
-                                if ( condition.id === conditionIds_Path_Entry ) {
-                                    conditionLabel = condition.label;
-                                    conditionGroupLabel = conditionGroup.label;
-                                    break;
-                                }
-                            }
-                            if ( conditionGroupLabel ) {
-                                break;
-                            }
-                        }
-                        if ( conditionLabel === undefined ) {
-                            const msg = "No condition entry found for conditionIds_Path_Entry: " + conditionIds_Path_Entry;
-                            console.warn( msg );
-                            throw Error( msg );
-                        }
-
-                        conditionGroupLabel_and_ConditionLabel_Data.push( { conditionGroupLabel, conditionLabel } ); //  class DownloadPSMs_PerConditionGroupConditionData
-
-                        conditionGroupLabels_Only.push( conditionGroupLabel );
-                    }
-
-                    for ( const projectSearchId of projectSearchIds ) {
-                        conditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId.set( projectSearchId, conditionGroupLabel_and_ConditionLabel_Data );
-                    }
-
-                    if ( ! conditionGroupLabels_Only_InSameOrder ) {
-
-                        conditionGroupLabels_Only_InSameOrder = conditionGroupLabels_Only;
-
-                    } else {
-
-                        //  Validate that conditionGroupLabels_Only_InSameOrder and conditionGroupLabels_Only are same
-
-                        if ( conditionGroupLabels_Only_InSameOrder.length !== conditionGroupLabels_Only.length ) {
-                            const msg = "conditionGroupLabels_Only_InSameOrder.length !== conditionGroupLabels_Only.length";
-                            console.warn( msg );
-                            throw Error( msg );
-                        }
-                        const conditionGroupLabels_Only_InSameOrder_length = conditionGroupLabels_Only_InSameOrder.length;
-                        for ( let index = 0; index < conditionGroupLabels_Only_InSameOrder_length; index++ ) {
-                            if ( conditionGroupLabels_Only_InSameOrder[ index ] !== conditionGroupLabels_Only[ index ] ) {
-                                const msg = "conditionGroupLabels_Only_InSameOrder[ index ] !== conditionGroupLabels_Only[ index ]";
-                                console.warn( msg );
-                                throw Error( msg );
-                            }
-                        }
-                    }
-                    
-                    firstDataEntry = false;
-
-                } catch ( e ) {
-                    try {
-                        console.warn( "Error in processAllDataEntries_Callback(...): ", e )
-                    } catch ( e2 ) {
-
-                    }
-                    reportWebErrorToServer.reportErrorObjectToServer( { errorException : e } );
-                    throw e;
-                }
-            }
-
-            this.props.propsValue.conditionGroupsDataContainer.processAllDataEntries_ConditionGroupsDataContainer({ callback : processAllDataEntries_Callback });
-        }
-
-        return { conditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId, conditionGroupLabels_Only_InSameOrder };
+        return {
+            conditionGroupLabel_and_ConditionLabel_Data_Map_Key_ProjectSearchId,
+            conditionGroupLabels_Only_InSameOrder
+        };
     }
 
 	/**

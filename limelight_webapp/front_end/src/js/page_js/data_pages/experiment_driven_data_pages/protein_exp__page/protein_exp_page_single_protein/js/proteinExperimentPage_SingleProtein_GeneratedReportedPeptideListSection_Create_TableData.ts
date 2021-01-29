@@ -23,7 +23,7 @@ import {
 } from 'page_js/data_pages/data_table_react/dataTable_React_DataObjects';
 
 import { Experiment_ConditionGroupsContainer } from 'page_js/data_pages/experiment_data_pages_common/experiment_ConditionGroupsContainer_AndChildren_Classes';
-import { ConditionGroupsDataContainer, ProcessAllDataEntries_callback_Param } from 'page_js/data_pages/experiment_data_pages_common/conditionGroupsDataContainer_Class';
+import { Experiment_ConditionGroupsDataContainer, Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param } from 'page_js/data_pages/experiment_data_pages_common/experiment_conditionGroupsDataContainer_Class';
 
 import { Create_GeneratedReportedPeptideListData_Result, CreateReportedPeptideDisplayData_Result_Entry } from './proteinExperimentPage_SingleProtein_Create_GeneratedReportedPeptideListData';
 
@@ -53,6 +53,7 @@ import {
 import {SearchDataLookupParameters_Root} from "page_js/data_pages/data_pages__common_data_classes/searchDataLookupParameters";
 import {ProteinExpmntPage_ReportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/reported_peptide_ids_for_display/proteinExpmntPage_getReportedPeptideIds_From_SelectionCriteria_AllProjectSearchIds";
 import {proteinExperimentPage_Display_SingleProtein_GeneratedReportedPeptideListSection_Components_Other} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/jsx/proteinExperimentPage_Display_SingleProtein_GeneratedReportedPeptideListSection_Components_Other";
+import {Experiment_Get_ProjectSearchIds_From_ConditionGroupsContainer_ConditionGroupsDataContainer} from "page_js/data_pages/experiment_data_pages_common/experiment_Get_ProjectSearchIds_From_ConditionGroupsContainer_ConditionGroupsDataContainer";
 
 
 //////////////////
@@ -97,7 +98,7 @@ export const createReportedPeptideDisplayData_DataTableDataObjects_GeneratedRepo
     create_GeneratedReportedPeptideListData_Result : Create_GeneratedReportedPeptideListData_Result,
 
     conditionGroupsContainer : Experiment_ConditionGroupsContainer
-    conditionGroupsDataContainer : ConditionGroupsDataContainer
+    conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer
 
     reportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds : ProteinExpmntPage_ReportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds
     proteinSequenceVersionId : number, 
@@ -118,73 +119,14 @@ export const createReportedPeptideDisplayData_DataTableDataObjects_GeneratedRepo
         return getDataTableDataObjects_Result;  // EARLY RETURN
     }
 
-    //  Accumulate by first_conditionGroup each condition.id
-
-    const projectSearchIds_By_conditionId = new Map<number,Set<number>>();
 
     const first_conditionGroup = conditionGroupsContainer.conditionGroups[ 0 ];
 
-    const first_id_ConditionGroup = first_conditionGroup.id;
-
     const first_conditionGroup_Conditions = first_conditionGroup.conditions;
 
-    const first_conditionGroup_ConditionIds : Set<number> = new Set();
-
-    for ( const condition of first_conditionGroup_Conditions ) {
-        const conditionId = condition.id;
-        first_conditionGroup_ConditionIds.add( conditionId );
-    }
-
-
-    const processAllDataEntries_Callback = ( params : ProcessAllDataEntries_callback_Param ) => {
-
-        const data = params.data
-        const innerData = data.data;
-
-        if ( ! innerData ) {
-            // innerData not populated
-            
-            return; //  EARLY RETURN
-        }
-
-        const projectSearchIds : Set<number> = innerData.projectSearchIds;
-
-        if ( ( ! projectSearchIds ) || ( projectSearchIds.size === 0 ) ) {
-            // innerData.projectSearchIds not populated
-            
-            return; //  EARLY RETURN
-        }
-
-        let condition_Id_For_first_ConditionGroup = undefined;
-
-        const conditionIds_Path = params.conditionIds_Path;
-
-        for ( const conditionIds_Path_Entry of conditionIds_Path ) {
-            if ( first_conditionGroup_ConditionIds.has( conditionIds_Path_Entry ) ) {
-                condition_Id_For_first_ConditionGroup = conditionIds_Path_Entry;
-                break;
-            }
-        }
-        if ( condition_Id_For_first_ConditionGroup === undefined ) {
-            const msg = "No entry found in first_conditionGroup_ConditionIds for first_id_ConditionGroup: " + first_id_ConditionGroup;
-            console.warn( msg );
-            throw Error( msg );
-        }
-
-        //  Accumulate projectSearchIds Per condition_Id_For_first_ConditionGroup
-
-        let projectSearchIds_For_conditionId = projectSearchIds_By_conditionId.get( condition_Id_For_first_ConditionGroup );
-        if ( ! projectSearchIds_For_conditionId ) {
-            projectSearchIds_For_conditionId = new Set<number>();
-            projectSearchIds_By_conditionId.set( condition_Id_For_first_ConditionGroup, projectSearchIds_For_conditionId );
-        }
-
-        for ( const projectSearchId of projectSearchIds ) {
-            projectSearchIds_For_conditionId.add( projectSearchId );
-        }
-    }
-
-    conditionGroupsDataContainer.processAllDataEntries_ConditionGroupsDataContainer({ callback : processAllDataEntries_Callback });
+    const projectSearchIds_By_conditionId :  Map<number,Set<number>> =
+        Experiment_Get_ProjectSearchIds_From_ConditionGroupsContainer_ConditionGroupsDataContainer.
+        getProjectSearchIds_For_First_ConditionGroup({ conditionGroupsContainer, conditionGroupsDataContainer });
 
     /////////////
 
@@ -273,10 +215,6 @@ export const createReportedPeptideDisplayData_DataTableDataObjects_GeneratedRepo
             }
 
             //  Data for child tables
-            // const projectSearchIds_ThatHavePsmCountsGtZero : Array<number> = [];
-
-
-            projectSearchIds_By_conditionId
 
             for ( const condition of first_conditionGroup_Conditions ) {
 
