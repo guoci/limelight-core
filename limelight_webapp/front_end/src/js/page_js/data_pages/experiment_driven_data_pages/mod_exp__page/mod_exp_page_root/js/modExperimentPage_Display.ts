@@ -20,7 +20,7 @@ import { Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass 
 
 import { ExperimentConditions_GraphicRepresentation_PropsData } from 'page_js/data_pages/experiment_data_pages_common/create_experimentConditions_GraphicRepresentation_PropsData';
 import { Experiment_ConditionGroupsContainer, Experiment_ConditionGroup, Experiment_Condition } from 'page_js/data_pages/experiment_data_pages_common/experiment_ConditionGroupsContainer_AndChildren_Classes';
-import { ConditionGroupsDataContainer, ProcessAllDataEntries_callback_Param } from 'page_js/data_pages/experiment_data_pages_common/conditionGroupsDataContainer_Class';
+import { Experiment_ConditionGroupsDataContainer, Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param } from 'page_js/data_pages/experiment_data_pages_common/experiment_conditionGroupsDataContainer_Class';
 import {
     create_ExperimentConditions_GraphicRepresentation_SelectedCells__YES__ExperimentPageCommon_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass,
     ExperimentConditions_GraphicRepresentation_SelectedCells,
@@ -67,7 +67,7 @@ export class ModExperimentPage_Display {
     private _searchDataLookupParamsRoot : SearchDataLookupParameters_Root
 
     private _conditionGroupsContainer : Experiment_ConditionGroupsContainer;
-    private _conditionGroupsDataContainer : ConditionGroupsDataContainer;
+    private _conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
     
     private _experimentConditions_GraphicRepresentation_PropsData
 
@@ -100,7 +100,7 @@ export class ModExperimentPage_Display {
         projectSearchIds : Array<number>,
         searchDataLookupParamsRoot : SearchDataLookupParameters_Root
         conditionGroupsContainer : Experiment_ConditionGroupsContainer,
-        conditionGroupsDataContainer : ConditionGroupsDataContainer,
+        conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer,
         experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData,
         // centralPageStateManager : CentralPageStateManager,
         experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
@@ -285,7 +285,7 @@ const _create_conditions_with_their_project_search_ids_for_condition_group = fun
     
     conditionGroup : Experiment_ConditionGroup
     conditionGroupsContainer : Experiment_ConditionGroupsContainer // Needed by called code
-    conditionGroupsDataContainer : ConditionGroupsDataContainer
+    conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer
     experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
 
 }) : Array<ModExperiment_Create_conditions_with_their_project_search_ids_for_condition_groupResultEntry> {
@@ -314,7 +314,7 @@ const _create_conditions_with_their_project_search_ids_for_condition_group = fun
 
     // const projectSearchIds_All = new Set();
                 
-    const processAllDataEntries_Callback = ( param : ProcessAllDataEntries_callback_Param ) => {
+    const processAllDataEntries_Callback = ( param : Experiment_ConditionGroupsDataContainer__ProcessAllDataEntries_callback_Param ) => {
 
         const conditionIds_Path = param.conditionIds_Path;
         const data = param.data;
