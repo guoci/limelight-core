@@ -18,11 +18,17 @@ $site-color-light: #f0f7f0;
 $site-color-dark-alt: #CDCD32;
 
 $site-color-gray: #d3d3d3;
+$site-color-gray-text: #a3a3a3;
 
 $link-color-unvisited: #005606;
 $link-color-visited: #005606;
 $link-color-hover: $site-color-dark;
 $link-color-active: $site-color-dark;
+
+//  The border color used for the NOT of OR/AND/NOT Peptide Filters
+
+$peptide-filter--not-border-color: red;
+
 
 //  Error Text
 
@@ -30,6 +36,10 @@ $error-text-color: #A55353;
 
 // our fonts
 $theme-font: arial, sans-serif;
+
+//  Default font size (Applied to <body> in all-pages.scss)
+$default-font-size: 14px;
+
 
 // what all borders look like
 %default-border-properties {

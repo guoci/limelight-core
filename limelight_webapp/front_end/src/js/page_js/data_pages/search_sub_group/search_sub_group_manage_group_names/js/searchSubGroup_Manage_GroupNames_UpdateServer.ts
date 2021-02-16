@@ -39,7 +39,7 @@ export const searchSubGroup_Manage_GroupNames_UpdateServer = function (
         subGroupEntries,
     };
 
-    return new Promise<any>( (resolve, reject) => {
+    return new Promise<void>( (resolve, reject) => {
 
         console.log("AJAX Call to Update Sub Group Data START, Now: " + new Date() );
 
@@ -49,11 +49,11 @@ export const searchSubGroup_Manage_GroupNames_UpdateServer = function (
 
         const promise_webserviceCallStandardPost = webserviceCallStandardPostResponse.promise;
 
-        promise_webserviceCallStandardPost.catch( (reason) => {
+        promise_webserviceCallStandardPost.catch( (reason: any) => {
             reject(reason);
         }  );
 
-        promise_webserviceCallStandardPost.then( ({ responseData }) => {
+        promise_webserviceCallStandardPost.then( ({ responseData }: { responseData: any }) => {
             try {
                 console.log("AJAX Call to Update Sub Group Data END, Now: " + new Date() );
 

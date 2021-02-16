@@ -77,7 +77,7 @@ export const renderToPageProteinList_MultipleSearches_Create_DataTable_RootTable
 
     } else {
 
-        const greyOutRow = undefined;  //  Not pass for not grouped
+        const greyOutRow = false;  //  Not pass for not grouped
 
         dataTable_DataRowEntries = _renderToPageProteinList_Create_dataObjects_NO_ProteinGroups({ greyOutRow, proteinList, projectSearchIds, singleProteinRowClickHandler_Callback });
     }
@@ -468,11 +468,9 @@ const _createProteinItem_DataTableEntry = function({ greyOutRow, proteinListItem
         }
         singleProteinRowClickHandler_Callback( singleProteinRowClickHandler_Params );
     }
-    const proteinRow_tableRowClickHandlerParameter = new ProteinRow_tableRowClickHandlerParameter_MultipleSearches({
 
-        proteinSequenceVersionId : proteinListItem.proteinSequenceVersionId
-    });
-        
+    //  Create DataTable_DataRowEntry
+
     const dataTable_DataRowEntry = new DataTable_DataRowEntry({
         uniqueId : proteinListItem.proteinSequenceVersionId,
         sortOrder_OnEquals : arrayIndex, // Original Sort Order

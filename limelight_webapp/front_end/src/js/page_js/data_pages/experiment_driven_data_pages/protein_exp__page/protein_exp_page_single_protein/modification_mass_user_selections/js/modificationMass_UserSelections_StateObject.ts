@@ -52,6 +52,7 @@ const _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE_PROPERTY_NAME =
 //  Values in ...SELECTION_TYPE_PROPERTY_NAME
 const _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__ANY__PROPERTY_NAME = "a"
 const _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__ALL__PROPERTY_NAME = "b"
+const _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__NOT__PROPERTY_NAME = "c"
 
 ///////
 
@@ -120,9 +121,9 @@ export class ModificationMass_UserSelections_StateObject {
     }
 
     /**
-     * @returns true if any Static Modifications currently selected of type SelectionType.ANY
+     * @returns true if any Static Modifications currently selected of type singleProtein_Filter_SelectionType_Requested
      */
-    is_Any_StaticModification_Selected__SelectionType__ANY() : boolean {
+    is_Any_StaticModification_Selected__For_SelectionType({ singleProtein_Filter_SelectionType_Requested } : { singleProtein_Filter_SelectionType_Requested: SingleProtein_Filter_SelectionType }) : boolean {
 
         let anySelected = false;
         if ( this._staticModificationsSelected.size !== 0 ) {
@@ -130,7 +131,7 @@ export class ModificationMass_UserSelections_StateObject {
                 const map_Key_ModMass = mapEntry_Key_ResidueLetter[ 1 ]
                 for ( const mapEntry_Key_ModMass of map_Key_ModMass.entries() ) {
                     const selectionEntry = mapEntry_Key_ModMass[1]
-                    if (selectionEntry.selectionType === SingleProtein_Filter_SelectionType.ANY) {
+                    if (selectionEntry.selectionType === singleProtein_Filter_SelectionType_Requested) {
                         anySelected = true
                         break;
                     }
@@ -140,31 +141,7 @@ export class ModificationMass_UserSelections_StateObject {
                 }
             }
         }
-        return anySelected // any selection of type SelectionType.ANY
-    }
-
-    /**
-     * @returns true if any Static Modifications currently selected of type SelectionType.ALL
-     */
-    is_Any_StaticModification_Selected__SelectionType__ALL() : boolean {
-
-        let anySelected = false;
-        if ( this._staticModificationsSelected.size !== 0 ) {
-            for ( const mapEntry_Key_ResidueLetter of this._staticModificationsSelected.entries() ) {
-                const map_Key_ModMass = mapEntry_Key_ResidueLetter[ 1 ]
-                for ( const mapEntry_Key_ModMass of map_Key_ModMass.entries() ) {
-                    const selectionEntry = mapEntry_Key_ModMass[1]
-                    if (selectionEntry.selectionType === SingleProtein_Filter_SelectionType.ALL) {
-                        anySelected = true
-                        break;
-                    }
-                }
-                if ( anySelected ) {
-                    break
-                }
-            }
-        }
-        return anySelected // any selection of type SelectionType.ALL
+        return anySelected // any selection of type singleProtein_Filter_SelectionType_Requested
     }
 
 	/**
@@ -231,6 +208,28 @@ export class ModificationMass_UserSelections_StateObject {
     }
 
     /**
+     * @returns a Map of the currently selected Static Modifications.  Just Residues and Masses:  Only for "NOT" Selection type SingleProtein_Filter_SelectionType.NOT
+     *     Map of Selected Static Modification Residue Letter And Mass <String, Set<Number>> <Residue Letter, <Mass>>
+     */
+    get_StaticModifications_Selected_Residue_Mass_Map_Set__ONLY__NOT_SelectionType() : Map<string, Set<number>> {
+        const result : Map<string, Set<number>> = new Map()
+        for ( const entryResidueMapEntry of this._staticModificationsSelected.entries() ) {
+            const entryResidue = entryResidueMapEntry[ 0 ]
+            const entryResidueMapValue = entryResidueMapEntry[ 1 ];
+            const resultMassSet = new Set<number>();
+            result.set( entryResidue, resultMassSet );
+            for ( const massMapEntry of entryResidueMapValue ) {
+                const selectionTypeEntry = massMapEntry[ 1 ]
+                if ( selectionTypeEntry.selectionType === SingleProtein_Filter_SelectionType.NOT ) {
+                    const mass = massMapEntry[0]
+                    resultMassSet.add(mass)
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      *
      */
     get_StaticModification_Selected({ residueLetter, modMass } : { residueLetter : string, modMass : number }) : SingleProtein_Filter_PerUniqueIdentifier_Entry {
@@ -260,7 +259,7 @@ export class ModificationMass_UserSelections_StateObject {
 	/**
 	 * 
 	 */
-    delete_StaticModification_Selected({ residueLetter, modMass }) {
+    delete_StaticModification_Selected({ residueLetter, modMass }: { residueLetter: string, modMass: number }) {
         let entryFor_ResidueLetter = this._staticModificationsSelected.get( residueLetter );
         if ( ! entryFor_ResidueLetter ) {
             return; // EARLY EXIT
@@ -288,12 +287,14 @@ export class ModificationMass_UserSelections_StateObject {
         //     This results in the array modificationsNonInteger probably not being sorted properly, which isn't a big deal
 
 		const result = {}
-		result[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ] = _ENCODING_DATA__VERSION_NUMBER__CURRENT_VERSION;
+		// @ts-ignore
+        result[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ] = _ENCODING_DATA__VERSION_NUMBER__CURRENT_VERSION;
 
 		{
 			const variableModificationsSelected_Encoded = this._variableModificationsSelected.getEncodedStateData();
 
 			if ( variableModificationsSelected_Encoded ) {
+                // @ts-ignore
 				result[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_OBJECT_PROPERTY_NAME ] = variableModificationsSelected_Encoded;
 			}
 		}
@@ -301,6 +302,7 @@ export class ModificationMass_UserSelections_StateObject {
             const openModificationsSelected_Encoded = this._openModificationsSelected.getEncodedStateData();
 
             if ( openModificationsSelected_Encoded ) {
+                // @ts-ignore
                 result[ _ENCODED_DATA__OPEN_MODIFICATION_MASS_SELECTED_OBJECT_PROPERTY_NAME ] = openModificationsSelected_Encoded;
             }
         }
@@ -343,15 +345,19 @@ export class ModificationMass_UserSelections_StateObject {
                     const selectEntryEncoded = _encodeStaticModSelection( selectEntry )
 
                     const resultEntry = {}
+                    // @ts-ignore
                     resultEntry[ _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_MASS_PROPERTY_NAME ] = massKey;
+                    // @ts-ignore
                     resultEntry[ _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE_PROPERTY_NAME ] = selectEntryEncoded;
 
                     resultArray.push( resultEntry )
                 }
 
+                // @ts-ignore
                 staticModificationsSelectedForEncoding[ mapKey ] = resultArray;
             }
 
+            // @ts-ignore
             result[ _ENCODED_DATA__STATIC_MODIFICATION_MASS_SELECTED_OBJECT_AND_ARRAY_ENCODING_PROPERTY_NAME ] = staticModificationsSelectedForEncoding;
 
         }
@@ -363,7 +369,7 @@ export class ModificationMass_UserSelections_StateObject {
 	 * Update the state of this object with the value from the URL
 	 * 
 	 */
-	set_encodedStateData({ encodedStateData }) {
+	set_encodedStateData({ encodedStateData }: { encodedStateData: any }) {
 
 		if ( ! ( encodedStateData ) ) {
 			const msg = "set_encodedStateData(...): No value in encodedStateData";
@@ -385,8 +391,11 @@ export class ModificationMass_UserSelections_StateObject {
 				encodedStateData[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_NON_INTEGERS_ARRAY_ENCODING_PROPERTY_NAME ] ) {
 
 				const encodedStateData_For_VariableModificationsSelections = {}
-				encodedStateData_For_VariableModificationsSelections[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ] = encodedStateData[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ];
+				// @ts-ignore
+                encodedStateData_For_VariableModificationsSelections[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ] = encodedStateData[ _ENCODED_DATA__VERSION_NUMBER_ENCODING_PROPERTY_NAME ];
+                // @ts-ignore
 				encodedStateData_For_VariableModificationsSelections[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_INTEGERS_ENCODED_ENCODING_PROPERTY_NAME ] = encodedStateData[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_INTEGERS_ENCODED_ENCODING_PROPERTY_NAME ];
+                // @ts-ignore
 				encodedStateData_For_VariableModificationsSelections[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_NON_INTEGERS_ARRAY_ENCODING_PROPERTY_NAME ] = encodedStateData[ _ENCODED_DATA__VARIABLE_MODIFICATION_MASS_SELECTED_NON_INTEGERS_ARRAY_ENCODING_PROPERTY_NAME ];
 
 				this._variableModificationsSelected.set_encodedStateData({ encodedStateData : encodedStateData_For_VariableModificationsSelections })
@@ -475,6 +484,8 @@ const _decodeStaticModSelection = function( selectionEncoded : string ) : Single
         selectionType = SingleProtein_Filter_SelectionType.ANY
     } else if ( selectionEncoded === _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__ALL__PROPERTY_NAME ) {
         selectionType = SingleProtein_Filter_SelectionType.ALL
+    } else if ( selectionEncoded === _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__NOT__PROPERTY_NAME ) {
+        selectionType = SingleProtein_Filter_SelectionType.NOT
     } else {
         const msg = "_decodeStaticModSelection: Unknown value for selectionEncoded: " + selectionEncoded
         console.warn( msg )
@@ -497,6 +508,8 @@ const _encodeStaticModSelection = function ( selectionEntry : SingleProtein_Filt
         selectionEntryEncoded = _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__ANY__PROPERTY_NAME
     } else if ( selectionEntry.selectionType === SingleProtein_Filter_SelectionType.ALL ) {
         selectionEntryEncoded = _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__ALL__PROPERTY_NAME
+    } else if ( selectionEntry.selectionType === SingleProtein_Filter_SelectionType.NOT ) {
+        selectionEntryEncoded = _SUBPART__ENCODED_DATA__STATIC_MODIFICATION_SELECTION_TYPE__NOT__PROPERTY_NAME
     } else {
         const msg = "_encodeStaticModSelection: Unknown value for selectionEntry.selectionType: " + selectionEntry.selectionType
         console.warn( msg )

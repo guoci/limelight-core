@@ -26,10 +26,14 @@ export interface ReporterIonMass_UserSelections_Props {
     updateMadeTo_reporterIonMass_UserSelections_StateObject_Callback : () => void;
 }
 
+interface ReporterIonMass_UserSelections_State {
+    _placeholder: any
+}
+
 /**
  * 
  */
-export class ReporterIonMass_UserSelections extends React.Component< ReporterIonMass_UserSelections_Props, { } > {
+export class ReporterIonMass_UserSelections extends React.Component< ReporterIonMass_UserSelections_Props, ReporterIonMass_UserSelections_State > {
 
     /**
      * 
@@ -40,13 +44,13 @@ export class ReporterIonMass_UserSelections extends React.Component< ReporterIon
         //  bind to 'this' for passing as parameters
         // this._callbackMethodForSelectedProteinSequenceChange_BindThis = this._callbackMethodForSelectedProteinSequenceChange.bind(this);
 
-        this.state = {  };
+        this.state = { _placeholder: null };
     }
 
     /**
      * @returns true if should update, false otherwise
      */
-    shouldComponentUpdate(nextProps : ReporterIonMass_UserSelections_Props, nextState) {
+    shouldComponentUpdate(nextProps : ReporterIonMass_UserSelections_Props, nextState:ReporterIonMass_UserSelections_State) {
 
         //  Only update if changed: props:
 
@@ -135,6 +139,7 @@ class SingleReporterIon_Entry extends React.Component< SingleReporterIon_Entry_P
     //  bind to 'this' for passing as parameters
     private _choice_ANY_Clicked_Callback_BindThis = this._choice_ANY_Clicked_Callback.bind(this)
     private _choice_ALL_Clicked_Callback_BindThis = this._choice_ALL_Clicked_Callback.bind(this)
+    private _choice_NOT_Clicked_Callback_BindThis = this._choice_NOT_Clicked_Callback.bind(this)
     private _choice_Remove_Clicked_Callback_BindThis = this._choice_Remove_Clicked_Callback.bind(this)
 
     /**
@@ -260,6 +265,31 @@ class SingleReporterIon_Entry extends React.Component< SingleReporterIon_Entry_P
     /**
      *
      */
+    private _choice_NOT_Clicked_Callback() {
+        try {
+            const selectionType = SingleProtein_Filter_SelectionType.NOT
+
+            this.setState( (state, props) : SingleReporterIon_Entry_State => {
+
+                return { selection_SelectionType : selectionType }
+            });
+
+            const reporterIonMass = this.props.reporterIonEntry.reporterIonMass;
+
+            const newEntry = new SingleProtein_Filter_PerUniqueIdentifier_Entry({ selectionType })
+            this.props.reporterIonMass_UserSelections_StateObject.set_ReporterIons_Selected( reporterIonMass, newEntry )
+
+            this._updateRestofPage();
+
+        } catch( e ) {
+            reportWebErrorToServer.reportErrorObjectToServer( { errorException : e } );
+            throw e;
+        }
+    }
+
+    /**
+     *
+     */
     private _choice_Remove_Clicked_Callback() {
         try {
             this.setState( (state, props) : SingleReporterIon_Entry_State => {
@@ -314,6 +344,7 @@ class SingleReporterIon_Entry extends React.Component< SingleReporterIon_Entry_P
                 current_selection_SelectionType={ this.state.selection_SelectionType }
                 any_Selected_Callback={ this._choice_ANY_Clicked_Callback_BindThis }
                 all_Selected_Callback={ this._choice_ALL_Clicked_Callback_BindThis }
+                not_Selected_Callback={ this._choice_NOT_Clicked_Callback_BindThis }
                 remove_Selected_Callback={ this._choice_Remove_Clicked_Callback_BindThis }
             />
         );

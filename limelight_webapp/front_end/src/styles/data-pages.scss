@@ -101,26 +101,16 @@
 
             div.table-row-group-inner-container-highlighted-row { // Table Group Inner Container for a group of Data Rows - highlighted
 
-                background: $site-color-light
+                background: $site-color-light;
             }
         }
 
-        //  Header Table and Data Rows Table
+        //  !!!  Header Table and Data Rows Table.  <table> and children values.  !!!
 
-        table.data-table-header-table, table.data-table-data-rows-table { border-spacing: 0px; }
+        table.data-table-header-table, table.data-table-data-rows-table {
 
-        table.data-table-header-table > thead > tr > th, table.data-table-data-rows-table > tbody > tr > td {
-            padding-right: 5px;
-            padding-left: 8px;
-        }
-
-        table.data-table-data-rows-table > tbody > tr > td {
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
-
-        table.data-table-header-table > thead > tr > th:first-child, table.data-table-data-rows-table > tbody > tr > td:first-child {
-            padding-left: 5px;
+          font-size: 12px;  //  DataTable Default Font Size
+          border-spacing: 12px 6px;  // <Horizontal> <Vertical> -- Spacing around cells in table
         }
 
         //  Data Table Row Border values.  Declared here since also used in Table Header formatting
@@ -146,32 +136,29 @@
             }
         }
 
-        // table.data-table-header-table {  }
+      table.data-table-header-table {
 
+        //  !!!   Search for 'table.data-table-header-table' above for additional values on this class name and it's children
 
         //  Header Row
 
         tr.data-table-header-row {
-            font-size: 14px;
             font-weight: bold;
         }
 
         th.data-table-header-cell {
             text-align: left;
             vertical-align:bottom;
-            padding-top: 1px;
-            padding-bottom: 1px;
-            // white-space:normal;
+            white-space:normal;
 
             div.display-name-container {
-                padding-top: 4px;
-                padding-bottom: 4px;
 
                 span.display-name-value {
                     overflow-wrap: break-word;
                 }
             }
         }
+      }
         
         //  Data Rows - Either all or in a group
 
@@ -187,7 +174,7 @@
                 width: $child-table-show-hide-icon-container--width;
                 position: absolute;
                 left: $child-table-show-hide-icon-container--left;
-                top: 5px;
+                top: 6px;
 
                 img.child-table-show-hide-icon {
                     max-width: 11px;
@@ -210,7 +197,21 @@
 
             div.data-table-data-rows-inner-containing-div {
 
-                &.grey-out-row {  //  grey out the row
+                &.table-row-hovered-highlight:hover {
+                  background-color:$site-color-medium;
+                }
+
+                &.table-row-highlight-with-background-color {
+                  color: white;
+                  background-color: $site-color-dark;
+
+                  &:hover {
+
+                    background-color: $site-color-very-dark;
+                  }
+                }
+
+                &.grey-out-row, &.grey-out-row.table-row-highlight-with-background-color {  //  grey out the row
                     opacity: 0.5;
                 }
 
@@ -224,49 +225,36 @@
                     &.row-border-style-dashed {
                       border-style: dashed;
                     }
+
+                    &.table-row-border-peptide-filter--not-border-color {
+                      border-color: $peptide-filter--not-border-color
+                    }
                 }
 
 
                 table.data-table-data-rows-table {
 
+                    //  !!!   Search for 'table.data-table-data-rows-table' above for additional values on this class name and it's children
 
                     tr.data-table-data-row {
 
-                        &.table-row-hovered-highlight:hover {
-                            background-color:$site-color-medium;
-                        }
-
-                        &.table-row-highlight-with-background-color {
-                            color: white;
-                            background-color: $site-color-dark;
-
-                            &:hover {
-
-                                background-color: $site-color-very-dark;
-                            }
-                        }
-
-                        //  Cells inside a row of the table
+                        //  Cells inside a data row of the table
 
                         td.data-table-data-cell {
                             vertical-align: top;
-                            padding-top: 5px;
-                            padding-bottom: 5px;
+                            //padding-top: 5px;
+                            //padding-bottom: 5px;
                             word-break: break-word; //  Keep this here as long as it works since not all cells will have the <span> with the class name 'table-data-cell-property-value'
 
-                            span.table-data-cell-property-value {
-                                overflow-wrap: break-word;
-                            }
+                            //span.table-data-cell-property-value {
+                            //    overflow-wrap: break-word;
+                            //}
                         }
 
-                        // td.data-table-cell {
-                            // white-space:normal;
-                        // }
                     }
                 }
             }
         }
-
     }
 
     //  Data Table React: End
@@ -298,7 +286,7 @@
     }
 
     div.div-table-header-row {
-        font-size:14px;
+        //font-size:14px;
         font-weight:bold;
         background-color:$site-color-medium;
     }
@@ -631,8 +619,9 @@
                     color: black;
                     padding: 3px;
                     margin: 0px;
-                    text-align:
-                    center;
+                    text-align: center;
+                    white-space: nowrap;
+                    overflow: hidden; text-overflow: ellipsis;
                  }
 
              }//end header div
@@ -656,8 +645,26 @@
              	}	 
                 .modal-overlay-body-standard-padding-right { // Standard padding for modal filled with text.
                 	padding-right: $modal-overlay-body-standard-padding-value;
-             	}	 
-            // }
+             	}
+
+                //  Listed again as ...-margin... for use with scrollable div
+
+                .modal-overlay-body-standard-margin { // Standard margin for modal filled with text.
+                  margin: $modal-overlay-body-standard-padding-value;
+                }
+                .modal-overlay-body-standard-margin-top { // Standard margin for modal filled with text.
+                  margin-top: $modal-overlay-body-standard-padding-value;
+                }
+                .modal-overlay-body-standard-margin-bottom { // Standard margin for modal filled with text.
+                  margin-bottom: $modal-overlay-body-standard-padding-value;
+                }
+                .modal-overlay-body-standard-margin-left { // Standard margin for modal filled with text.
+                  margin-left: $modal-overlay-body-standard-padding-value;
+                }
+                .modal-overlay-body-standard-margin-right { // Standard margin for modal filled with text.
+                  margin-right: $modal-overlay-body-standard-padding-value;
+                }
+          // }
     }
 
     div.modal-overlay-flexbox-overflow-control-no-header-container {
@@ -693,29 +700,38 @@
 
       .folder-container {
         padding-left: 8px;
-        padding-top: 3px;
-        padding-bottom: 3px;
-        clear: both;
+        margin-top: 8px;
 
-        .folder-collapsable-link-container {
-          float: left;
-          padding-top: 0;
-          padding-right: 3px;
-        }
-        .folder-name-display {
-          font-size: 18px;
-          font-weight: bold;
-        }
+        .folder-name-and-collapsable-container {
 
-        .searches-under-folder-block {
-          margin-left: 20px;
-          margin-top: 6px;
+          &:hover {
+            background-color: $site-color-medium;
+          }
+
+          .folder-collapsable-link-container {
+            padding-top: 3px;
+            padding-right: 6px;
+          }
+
+          .folder-name-display {
+            font-size: 18px;
+            font-weight: bold;
+          }
+
+          .searches-under-folder-block {
+            margin-left: 20px;
+            margin-top: 6px;
+          }
         }
       }
 
       div.search-entry-container {
 
-            padding: 4px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+
+            padding-left: 4px;
+            padding-right: 4px;
 
             &:hover {
                 background-color: $site-color-medium;
@@ -732,7 +748,7 @@
 
             &.selected-other-cell {
 
-                color: $site-color-gray
+                color: $site-color-gray-text
             }
       }
     }
@@ -1277,17 +1293,6 @@
 
             &:hover {
                 background-color: $site-color-medium;
-            }
-        }
-
-        .searches-selected-container {
-
-        }
-
-        .searches-not-selected-container {
-            
-            .search-selected-other-cell {
-                color: $site-color-gray;
             }
         }
     }

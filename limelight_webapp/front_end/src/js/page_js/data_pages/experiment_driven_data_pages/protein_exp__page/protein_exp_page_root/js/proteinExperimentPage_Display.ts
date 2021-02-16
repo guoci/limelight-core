@@ -27,7 +27,7 @@ import {
 import {
     DataTable_TableOptions,
     DataTable_RootTableObject,
-    DataTable_RootTableDataObject,
+    DataTable_RootTableDataObject, DataTable_DataRowEntry__tableRowClickHandler_Callback_NoDataPassThrough_Params,
 } from 'page_js/data_pages/data_table_react/dataTable_React_DataObjects';
 
 import { ProteinExperimentPage_Root_Component, ProteinExperimentPage_Root_Component_Props, ProteinExperimentPage_Root_Component_ProteinListData_Param } from '../jsx/proteinExperimentPage_Root_Component';
@@ -54,6 +54,8 @@ import {ProteinExperiment__CreateProteinDataTableColumns_Class} from "page_js/da
 import {get_OpenModificationsForReportedPeptideIds} from "page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_single_protein_common/proteinViewPage_DisplayData_SingleProtein_Get_Open_ModificationsForReportedPeptides";
 import {SearchDataLookupParameters_Root} from "page_js/data_pages/data_pages__common_data_classes/searchDataLookupParameters";
 import {loadPeptideIdsIfNeeded_ProteinPage_SingleSearch_LoadTo_loadedDataPerProjectSearchIdHolder} from "page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_single_search/ProteinPage_SingleSearch_LoadTo_loadedDataPerProjectSearchIdHolder/loadPeptideIdsIfNeeded_ProteinPage_SingleSearch_LoadTo_loadedDataPerProjectSearchIdHolder";
+import {GeneratedPeptideContents_UserSelections_StateObject} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/generated_peptide_contents__user_controls/js/generatedPeptideContents_UserSelections_StateObject";
+import {ProteinList_ExpPage_CentralStateManagerObjectClass} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_root/js/proteinList_ExpPage_CentralStateManagerObjectClass";
 
 
 
@@ -65,12 +67,49 @@ export class ProteinExperiment_Create_conditions_with_their_project_search_ids_f
     projectSearchIds : Set<number>
 }
 
-/**
- * DataTable_DataRowEntry.tableRowClickHandlerParameter value
- */
-export class ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value {
+///   Callback when row in protein list table is clicked
 
-    proteinListItem;
+export class ProteinExperimentPage_singleProteinRow_ClickHandler_Params {
+    tableRowData: ProteinExperimentPage_Display_tableRowData
+    dataTable_RowClickCallback_Params: DataTable_DataRowEntry__tableRowClickHandler_Callback_NoDataPassThrough_Params
+}
+
+export type ProteinExperimentPage_singleProteinRow_ClickHandler = ( params : ProteinExperimentPage_singleProteinRow_ClickHandler_Params ) => void
+
+/**
+ * Table Row Data, in an Object
+ */
+export class ProteinExperimentPage_Display_tableRowData_AllRows {
+
+    private _proteinRowDataAll = new Map<number, ProteinExperimentPage_Display_tableRowData>();
+
+    get_ProteinRowData_For_ProteinSequenceVersionId({ proteinSequenceVersionId } : { proteinSequenceVersionId : number }) : ProteinExperimentPage_Display_tableRowData {
+        return this._proteinRowDataAll.get( proteinSequenceVersionId );
+    }
+    set_ProteinRowData_For_ProteinSequenceVersionId({ proteinSequenceVersionId, data } : { proteinSequenceVersionId : number, data: ProteinExperimentPage_Display_tableRowData }) : void {
+        this._proteinRowDataAll.set( proteinSequenceVersionId, data );
+    }
+}
+
+/**
+ * Table Row Data, in an Object
+ */
+export class ProteinExperimentPage_Display_tableRowData {
+
+    constructor(
+        {
+            proteinSequenceVersionId, proteinName, proteinDescription
+        } : {
+            proteinSequenceVersionId: number, proteinName: string, proteinDescription: string
+        } ) {
+        this.proteinSequenceVersionId = proteinSequenceVersionId;
+        this.proteinName = proteinName;
+        this.proteinDescription = proteinDescription;
+    }
+
+    proteinSequenceVersionId : number
+    proteinName: string
+    proteinDescription: string
 }
 
 /**
@@ -80,6 +119,12 @@ export class ProteinExperimentPage_Display {
 
     private _selectedConditionIdsUpdated_Callback_BindThis = this._selectedConditionIdsUpdated_Callback.bind(this);
     private _proteinGroup_SelectionValues_Changed_Callback_BindThis = this._proteinGroup_SelectionValues_Changed_Callback.bind(this);
+
+    private _proteinListTable_dataRow_ClickHandler_BindThis = this._proteinListTable_dataRow_ClickHandler.bind(this)
+
+    private _DO_NOT_CALL_CastTestOnly() {
+        const proteinListTable_dataRow_ClickHandler : ProteinExperimentPage_singleProteinRow_ClickHandler = this._proteinListTable_dataRow_ClickHandler;
+    }
 
     private _data_LoadedFor_ComputedReportedPeptides_AllProteins = false;
 
@@ -101,13 +146,16 @@ export class ProteinExperimentPage_Display {
     private _conditionGroupsContainer : Experiment_ConditionGroupsContainer;
     private _conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
     
-    private _experimentConditions_GraphicRepresentation_PropsData
+    private _experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData
 
     // private _centralPageStateManager : CentralPageStateManager;
+
+    private _proteinList_ExpPage_CentralStateManagerObjectClass : ProteinList_ExpPage_CentralStateManagerObjectClass;
+    private _generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
+
     private _experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass;
     private _proteinGrouping_CentralStateManagerObjectClass : ProteinGrouping_CentralStateManagerObjectClass
     private _singleProtein_ExpPage_CentralStateManagerObjectClass : SingleProtein_ExpPage_CentralStateManagerObjectClass;
-
 
     private _proteinExperiment__CreateProteinDataTableColumns_Class : ProteinExperiment__CreateProteinDataTableColumns_Class;
 
@@ -126,17 +174,6 @@ export class ProteinExperimentPage_Display {
     private _proteinExperimentPage_Display_SingleProtein : ProteinExperimentPage_Display_SingleProtein;
 
 
-    private _proteinListTable_dataRow_ClickHandler_BindThis : ({ 
-        event, 
-        tableRowClickHandlerParameter 
-    } : { 
-        event : React.MouseEvent<HTMLTableRowElement, MouseEvent>
-        tableRowClickHandlerParameter : any 
-    }) => void = ( 
-        this._proteinListTable_dataRow_ClickHandler.bind(this)
-    );
-
-
 	/**
 	 * 
 	 */
@@ -152,6 +189,10 @@ export class ProteinExperimentPage_Display {
         experimentConditions_GraphicRepresentation_PropsData,
         // centralPageStateManager,
         experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass,
+
+        proteinList_ExpPage_CentralStateManagerObjectClass,
+        generatedPeptideContents_UserSelections_StateObject,
+
         proteinGrouping_CentralStateManagerObjectClass,
         singleProtein_ExpPage_CentralStateManagerObjectClass
 
@@ -167,6 +208,10 @@ export class ProteinExperimentPage_Display {
         experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData,
         // centralPageStateManager : CentralPageStateManager,
         experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
+
+        proteinList_ExpPage_CentralStateManagerObjectClass : ProteinList_ExpPage_CentralStateManagerObjectClass
+        generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
+
         proteinGrouping_CentralStateManagerObjectClass : ProteinGrouping_CentralStateManagerObjectClass
         singleProtein_ExpPage_CentralStateManagerObjectClass : SingleProtein_ExpPage_CentralStateManagerObjectClass
 
@@ -190,11 +235,14 @@ export class ProteinExperimentPage_Display {
 
         // this._centralPageStateManager = centralPageStateManager;
         this._experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass = experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass;
+
+        this._proteinList_ExpPage_CentralStateManagerObjectClass = proteinList_ExpPage_CentralStateManagerObjectClass;
+        this._generatedPeptideContents_UserSelections_StateObject = generatedPeptideContents_UserSelections_StateObject;
+
         this._proteinGrouping_CentralStateManagerObjectClass = proteinGrouping_CentralStateManagerObjectClass;
         this._singleProtein_ExpPage_CentralStateManagerObjectClass = singleProtein_ExpPage_CentralStateManagerObjectClass;
 
-
-		// !!!!!!!!!  TODO  Parts of this._loadedDataCommonHolder need to be cleared if the cutoffs or other filters change
+        // !!!!!!!!!  TODO  Parts of this._loadedDataCommonHolder need to be cleared if the cutoffs or other filters change
 		
 		//   this._loadedDataCommonHolder is shared with this._proteinExperimentPage_Display_SingleProtein
 		
@@ -305,7 +353,9 @@ export class ProteinExperimentPage_Display {
                 let loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder> = undefined;
 
                 for ( const promiseResult of promiseResults ) {
+                    // @ts-ignore
                     if ( promiseResult && promiseResult.loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds ) {
+                        // @ts-ignore
                         loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds = promiseResult.loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds;
                     }
                 }
@@ -497,13 +547,19 @@ export class ProteinExperimentPage_Display {
         const proteinCount = proteinList.length;
 
         //    DataTable_RootTableDataObject Object from Protein List
-        const rootTableDataObject: DataTable_RootTableDataObject = proteinExperiment__createProteinList_DataTable_RootTableDataObject( {
-            proteinList, 
+        const {
+            dataTable_RootTableDataObject, // DataTable_RootTableDataObject
+            tableRowData_AllRows //  ProteinExperimentPage_Display_tableRowData_AllRows.   Data for Rows, in JS object
+        } = proteinExperiment__createProteinList_DataTable_RootTableDataObject( {
+            singleProteinRowClickHandler_Callback : this._proteinListTable_dataRow_ClickHandler_BindThis,
+            proteinList,
             conditions_for_condition_group_with_their_project_search_ids,
             proteinGroups_ArrayOf_ProteinGroup : createProteinDisplayData_Result.proteinGroups_ArrayOf_ProteinGroup,
             proteinGrouping_CentralStateManagerObjectClass : this._proteinGrouping_CentralStateManagerObjectClass,
             proteinExperiment__CreateProteinDataTableColumns_Class : this._proteinExperiment__CreateProteinDataTableColumns_Class
-        } );
+        } )
+
+        const rootTableDataObject: DataTable_RootTableDataObject = dataTable_RootTableDataObject;
 
         let proteinGroupCount = null;
 
@@ -522,54 +578,14 @@ export class ProteinExperimentPage_Display {
                 console.log( "Have proteinSequenceVersionId_FromURL value" );
 
 				//  Have proteinSequenceVersionId_FromURL so display Single Protein Overlay
-                // this._singleProteinRowShowSingleProteinOverlay( { proteinSequenceVersionId : proteinSequenceVersionId_FromURL } ) ;
-                
-                //  Find dataObject for proteinSequenceVersionId_FromURL
 
-                let proteinListItem_For_proteinSequenceVersionId_FromURL = undefined;
+                const tableRowData_For_proteinSequenceVersionId_FromURL = tableRowData_AllRows.get_ProteinRowData_For_ProteinSequenceVersionId({ proteinSequenceVersionId : proteinSequenceVersionId_FromURL });
 
-                // if ( rootTableDataObject.dataTable_DataRowEntries ) {
-
-                for ( const dataObject of rootTableDataObject.dataTable_DataRowEntries ) {
-
-                    //  Cast in this assignment. Will validate the type next with ( tableRowClickHandlerParameter instanceof ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value )
-                    const proteinExperimentPage_Display_tableRowClickHandlerParameter_Value : ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value = (
-                        dataObject.tableRowClickHandlerParameter as ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value
-                    );
-                    if ( ! proteinExperimentPage_Display_tableRowClickHandlerParameter_Value ) {
-                        const msg = "ProteinExperimentPage_Display._formatAndRenderData: no value for tableRowClickHandlerParameter";
-                        console.warn( msg );
-                        throw Error( msg );
-                    }
-                    if ( ! ( proteinExperimentPage_Display_tableRowClickHandlerParameter_Value instanceof ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value ) ) {
-                        const msg = "ProteinExperimentPage_Display._formatAndRenderData: tableRowClickHandlerParameter not instance of ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value";
-                        console.warn( msg );
-                        throw Error( msg );
-                    }
-
-                    const proteinListItem = proteinExperimentPage_Display_tableRowClickHandlerParameter_Value.proteinListItem;
-                    if ( ! proteinListItem ) {
-                        const msg = "ProteinExperimentPage_Display._formatAndRenderData: no value for proteinListItem";
-                        console.warn( msg );
-                        throw Error( msg );
-                    }
-                    if ( proteinListItem.proteinSequenceVersionId === undefined || proteinListItem.proteinSequenceVersionId === null ) {
-                        const msg = "ProteinExperimentPage_Display._formatAndRenderData: no value for proteinListItem.proteinSequenceVersionId";
-                        console.warn( msg );
-                        throw Error( msg );
-                    }
-
-                    if ( proteinListItem.proteinSequenceVersionId === proteinSequenceVersionId_FromURL ) {
-                        proteinListItem_For_proteinSequenceVersionId_FromURL = proteinListItem;
-                        break;
-                    }
-                }
-            
-                if ( proteinListItem_For_proteinSequenceVersionId_FromURL ) {
+                if ( tableRowData_For_proteinSequenceVersionId_FromURL ) {
 
                     directlyShowingSingleProtein = true;
 
-                    this._singleProteinRowShowSingleProteinOverlay({ entry_proteinList_ForDataTable : proteinListItem_For_proteinSequenceVersionId_FromURL });
+                    this._singleProteinRowShowSingleProteinOverlay({ tableRowData : tableRowData_For_proteinSequenceVersionId_FromURL });
 
                 } else {
                     console.warn( "No entry in proteinList_ForDataTable for proteinSequenceVersionId_FromURL: " + proteinSequenceVersionId_FromURL );
@@ -587,9 +603,7 @@ export class ProteinExperimentPage_Display {
 
             //  Add Protein List Data to page:
 
-            const tableOptions = new DataTable_TableOptions({
-                dataRowClickHandler: this._proteinListTable_dataRow_ClickHandler_BindThis //  Called when a data row is clicked
-            });
+            const tableOptions = new DataTable_TableOptions({});
 
             const proteinListDataTable: DataTable_RootTableObject = new DataTable_RootTableObject({
                 dataTableId: "Experiment Protein List",
@@ -613,40 +627,13 @@ export class ProteinExperimentPage_Display {
     /**
      * Data Table Row has been clicked - Protein List 
      */
-    _proteinListTable_dataRow_ClickHandler({ event, tableRowClickHandlerParameter } : { event : React.MouseEvent<HTMLTableRowElement, MouseEvent>, tableRowClickHandlerParameter : any }) {
+    _proteinListTable_dataRow_ClickHandler(params : ProteinExperimentPage_singleProteinRow_ClickHandler_Params) : void {
         try {
-            // console.log("_proteinListTable_dataRow_ClickHandler(...):  uniqueId: " + uniqueId + ", dataObject: ");
-            // console.log( dataObject );
-
-            if ( ! tableRowClickHandlerParameter ) {
-                const msg = "ProteinExperimentPage_Display._proteinListTable_dataRow_ClickHandler: no value for tableRowClickHandlerParameter";
-                console.warn( msg );
-                throw Error( msg );
-            }
-            if ( ! ( tableRowClickHandlerParameter instanceof ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value ) ) {
-                const msg = "ProteinExperimentPage_Display._proteinListTable_dataRow_ClickHandler: tableRowClickHandlerParameter not instance of ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value";
-                console.warn( msg );
-                throw Error( msg );
-            }
-            const proteinExperimentPage_Display_tableRowClickHandlerParameter_Value = tableRowClickHandlerParameter as ProteinExperimentPage_Display_tableRowClickHandlerParameter_Value;
-
-            const proteinListItem = proteinExperimentPage_Display_tableRowClickHandlerParameter_Value.proteinListItem;
-            if ( ! proteinListItem ) {
-                const msg = "ProteinExperimentPage_Display._proteinListTable_dataRow_ClickHandler: no value for proteinListItem";
-                console.warn( msg );
-                throw Error( msg );
-            }
-            if ( proteinListItem.proteinSequenceVersionId === undefined || proteinListItem.proteinSequenceVersionId === null ) {
-                const msg = "ProteinExperimentPage_Display._proteinListTable_dataRow_ClickHandler: no value for proteinListItem.proteinSequenceVersionId";
-                console.warn( msg );
-                throw Error( msg );
-            }
-
-            const proteinSequenceVersionId = proteinListItem.proteinSequenceVersionId;
+            const proteinSequenceVersionId = params.tableRowData.proteinSequenceVersionId;
 
             this._singleProtein_ExpPage_CentralStateManagerObjectClass.setProteinSequenceVersionId( { proteinSequenceVersionId } );
 
-            this._singleProteinRowShowSingleProteinOverlay({ entry_proteinList_ForDataTable : proteinListItem });
+            this._singleProteinRowShowSingleProteinOverlay({ tableRowData : params.tableRowData });
 
         } catch( e ) {
             reportWebErrorToServer.reportErrorObjectToServer( { errorException : e } );
@@ -660,9 +647,7 @@ export class ProteinExperimentPage_Display {
      * Called from dataRow ClickHandler
      * Called from on page load when have Single Protein ID in URL
      */
-    _singleProteinRowShowSingleProteinOverlay({ entry_proteinList_ForDataTable }) {
-
-        const proteinSequenceVersionId = entry_proteinList_ForDataTable.proteinSequenceVersionId;
+    _singleProteinRowShowSingleProteinOverlay({ tableRowData } : { tableRowData: ProteinExperimentPage_Display_tableRowData }) {
 
 		//  Current Window Scroll position
 		const currentWindowScrollY = window.scrollY;
@@ -674,8 +659,6 @@ export class ProteinExperimentPage_Display {
 		//  Create callback function to call on single protein close
 		
         const singleProteinCloseCallback = () : void => {
-
-			const proteinSequenceVersionIdLocal = proteinSequenceVersionId;
 
 			//  Show Main Div inside of header/footer
 			const $data_page_overall_enclosing_block_div = $("#data_page_overall_enclosing_block_div");
@@ -727,10 +710,15 @@ export class ProteinExperimentPage_Display {
             }
         }
 
+        const proteinListItem = {
+            name: tableRowData.proteinName,
+            description: tableRowData.proteinDescription
+        }
+
         this._proteinExperimentPage_Display_SingleProtein = new ProteinExperimentPage_Display_SingleProtein({ 
             
-            proteinSequenceVersionId,
-            proteinListItem : entry_proteinList_ForDataTable, 
+            proteinSequenceVersionId : tableRowData.proteinSequenceVersionId,
+            proteinListItem,
             
             singleProteinCloseCallback,
 
@@ -748,6 +736,10 @@ export class ProteinExperimentPage_Display {
             conditionGroupsDataContainer : this._conditionGroupsDataContainer,
             
             experimentConditions_GraphicRepresentation_PropsData : this._experimentConditions_GraphicRepresentation_PropsData,
+
+            proteinList_ExpPage_CentralStateManagerObjectClass : this._proteinList_ExpPage_CentralStateManagerObjectClass,
+            generatedPeptideContents_UserSelections_StateObject : this._generatedPeptideContents_UserSelections_StateObject,
+
             singleProtein_ExpPage_CentralStateManagerObjectClass : this._singleProtein_ExpPage_CentralStateManagerObjectClass,
             experiment_DataPages_LoggedInUser_CommonObjectsFactory : this._experiment_DataPages_LoggedInUser_CommonObjectsFactory,
             experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : this._experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass

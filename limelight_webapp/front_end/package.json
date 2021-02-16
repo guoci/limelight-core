@@ -32,7 +32,7 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.20.3",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.2",
+    "typescript": "^4.1.5",
     "url-loader": "^1.0.1",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6"
@@ -42,7 +42,7 @@
     "@types/react": "^16.9.2",
     "@types/react-beautiful-dnd": "^11.0.3",
     "babel-loader": "^8.0.6",
-    "caniuse-lite": "^1.0.30001147",
+    "caniuse-lite": "^1.0.30001187",
     "d3-drag": "^1.2.4",
     "jstat": "^1.9.1",
     "react": "^16.8.6",

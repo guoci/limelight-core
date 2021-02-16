@@ -28,26 +28,33 @@ export interface DataTable_Table_DataRowEntry_Props {
   column : DataTable_Column
 }
 
+class DataTable_Table_DataRowEntry_State {
+
+    _placeholder: any
+}
+
 /**
  * 
  * 
  * 
  */
-export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Table_DataRowEntry_Props, {} > {
+export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Table_DataRowEntry_Props, DataTable_Table_DataRowEntry_State > {
 
     private _cellContentsDiv_onMouseEnterCallback_BindThis = this._cellContentsDiv_onMouseEnterCallback.bind(this);
     private _cellContentsDiv_onMouseLeaveCallback_BindThis = this._cellContentsDiv_onMouseLeaveCallback.bind(this);
 
-    private readonly _displayNameValueDiv_Ref :  React.RefObject<HTMLDivElement>
+    private readonly _displayNameValue_TD_Ref :  React.RefObject<HTMLTableDataCellElement>
 
     private _tooltip_Limelight_Created_Tooltip : Tooltip_Limelight_Created_Tooltip
 
   constructor(props : DataTable_Table_DataRowEntry_Props) {
     super(props);
 
-      this._displayNameValueDiv_Ref = React.createRef();
+      this._displayNameValue_TD_Ref = React.createRef();
 
-    // this.state = {};
+      this.state = {
+          _placeholder: null
+      };
   }
 
 
@@ -73,7 +80,7 @@ export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Tab
     /**
      * @returns true if should update, false otherwise
      */
-    shouldComponentUpdate(nextProps : DataTable_Table_DataRowEntry_Props, nextState) {
+    shouldComponentUpdate(nextProps : DataTable_Table_DataRowEntry_Props, nextState: DataTable_Table_DataRowEntry_State ) {
 
         // console.log("DataTable_Table_DataRowEntry: shouldComponentUpdate")
 
@@ -114,7 +121,7 @@ export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Tab
           }
           const tooltipContents = this.props.dataObject_columnEntry.tooltipDisplay_FunctionCallback_Return_JSX_Element_NoDataPassThrough(params);
 
-          this._tooltip_Limelight_Created_Tooltip = tooltip_Limelight_Create_Tooltip({ tooltipContents, tooltip_target_DOM_Element : this._displayNameValueDiv_Ref.current })
+          this._tooltip_Limelight_Created_Tooltip = tooltip_Limelight_Create_Tooltip({ tooltipContents, tooltip_target_DOM_Element : this._displayNameValue_TD_Ref.current })
 
       } catch( e ) {
           console.warn( "Error in DataTable_Table_DataRowEntry._cellContentsDiv_onMouseEnterCallback: ", e )
@@ -160,8 +167,12 @@ export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Tab
 
       const column = this.props.column;
 
-      const styleContainerDiv : React.CSSProperties = { width: column.width, minWidth: column.width, maxWidth: column.width };
+      let className_Container_TD = " data-table-data-cell ";
+      if ( column.cssClassNameAdditions_DataRowCell ) {
+          className_Container_TD += column.cssClassNameAdditions_DataRowCell;
+      }
 
+      const styleContainerDiv : React.CSSProperties = { width: column.width, minWidth: column.width, maxWidth: column.width };
 
       //  Height not restricted to column.heightInitial
       
@@ -183,7 +194,11 @@ export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Tab
             console.warn( msg );
             throw Error( msg );
           }
-          styleContainerDiv[ style_override_ReactKey ] =  style_override_React[ style_override_ReactKey ];
+          if ( style_override_ReactKey !== 'display') { // NOT ALLOW: change to 'display' property
+              //  Copy object property with string in style_override_ReactKey from style_override_React to styleContainer_TD
+              // @ts-ignore
+              styleContainerDiv[style_override_ReactKey] = style_override_React[style_override_ReactKey];
+          }
         }
       }
 
@@ -273,27 +288,20 @@ export class DataTable_Table_DataRowEntry extends React.Component< DataTable_Tab
       }
 
       return (
-          <td 
-              className={ " data-table-data-cell data-table-cell " }
-              // data-index={ index }
-              // data-value={ valueDisplay }
+          <td
+              ref={ this._displayNameValue_TD_Ref }
+              style={ styleContainerDiv }
+              className={ className_Container_TD }
+              //  Set onMouse... if have tooltip callback
+              onMouseEnter={ cellContentsDiv_onMouseEnterCallback }
+              onMouseLeave={ cellContentsDiv_onMouseLeaveCallback }
+              // Set title attribute if have text tooltip
+              title={ tooltipText }
               >
-                {/* Removed since property not set: data-row-id={ columnEntry.uniqueId } */}
 
-            <div  ref={ this._displayNameValueDiv_Ref }
-                  //  Set onMouse... if have tooltip callback
-                  onMouseEnter={ cellContentsDiv_onMouseEnterCallback }
-                  onMouseLeave={ cellContentsDiv_onMouseLeaveCallback }
-                  // Set title attribute if have text tooltip
-                  title={ tooltipText }
-                  style={ styleContainerDiv } className={ column.cssClassNameAdditions_DataRowCell } 
-            >
               { horizontalGraph }
               { horizontalGraph_SpaceAfter }
-              <span
-                  className=" table-data-cell-property-value "
-              >{ valueDisplay }{ cellDisplayContents_FromCallback }</span>
-            </div>
+              { valueDisplay }{ cellDisplayContents_FromCallback }
           </td>
       )
     }

@@ -47,6 +47,8 @@ import { Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass 
 import {ModificationMass_Subpart_Variable_Open_Modifications_UserSelections_StateObject} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/modification_mass_user_selections/js/modificationMass_Subpart_Variable_Open_Modifications_UserSelections_StateObject";
 import {SearchDataLookupParameters_Root} from "page_js/data_pages/data_pages__common_data_classes/searchDataLookupParameters";
 import {PeptideUnique_UserSelection_StateObject} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/peptide_unique_user_filter_selection/js/peptideUnique_UserSelection_StateObject";
+import {GeneratedPeptideContents_UserSelections_StateObject} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/generated_peptide_contents__user_controls/js/generatedPeptideContents_UserSelections_StateObject";
+import {ProteinList_ExpPage_CentralStateManagerObjectClass} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_root/js/proteinList_ExpPage_CentralStateManagerObjectClass";
 
 
 /**
@@ -63,7 +65,7 @@ export class ProteinExperimentPage_Display_SingleProtein {
 
 
 	private _proteinSequenceVersionId : number;
-	private _proteinListItem;
+	private _proteinListItem : {name: string, description: string};
 
 	private _singleProteinCloseCallback : ProteinExperimentPage_Display_SingleProtein_singleProteinCloseCallback;
 	
@@ -83,7 +85,10 @@ export class ProteinExperimentPage_Display_SingleProtein {
 	private _conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
 	
 	private _experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData;
-	
+
+	private _proteinList_ExpPage_CentralStateManagerObjectClass : ProteinList_ExpPage_CentralStateManagerObjectClass;
+	private _generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
+
 	private _singleProtein_ExpPage_CentralStateManagerObjectClass : SingleProtein_ExpPage_CentralStateManagerObjectClass;
 
 	private _experiment_DataPages_LoggedInUser_CommonObjectsFactory : Experiment_DataPages_LoggedInUser_CommonObjectsFactory
@@ -117,54 +122,61 @@ export class ProteinExperimentPage_Display_SingleProtein {
 	//  after constructor
 
 
-	private _singleProteinContainer_addedDivElementDOM;
+	private _singleProteinContainer_addedDivElementDOM:  HTMLDivElement;
 
-	private _renderedReactComponent_ProteinExperimentPage_Root_Component;
+	private _renderedReactComponent_ProteinExperimentPage_Root_Component: ProteinExperimentPage_SingleProtein_Root_Component;
 	
 	/**
 	 * 
 	 */
-	constructor({ 
-        proteinSequenceVersionId,
-        proteinListItem, 
+	constructor(
+		{
+			proteinSequenceVersionId,
+			proteinListItem,
 
-		singleProteinCloseCallback,
-		
-		loadedDataCommonHolder,
-		loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds,
+			singleProteinCloseCallback,
 
-        dataPageStateManager_DataFrom_Server,
-        experimentId, 
-        experimentName, 
-        projectSearchIds,
-        searchDataLookupParamsRoot,
-        conditionGroupsContainer,
-        conditionGroupsDataContainer,
-		experimentConditions_GraphicRepresentation_PropsData, 
-		singleProtein_ExpPage_CentralStateManagerObjectClass,
-		experiment_DataPages_LoggedInUser_CommonObjectsFactory,
-		experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
-     } : { 
-        proteinSequenceVersionId : number,
-        proteinListItem, 
+			loadedDataCommonHolder,
+			loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds,
 
-		singleProteinCloseCallback,
-		
-		loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder,
-		loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>,
-	
-        dataPageStateManager_DataFrom_Server : DataPageStateManager,
-        experimentId : number, 
-        experimentName : string, 
-        projectSearchIds : Array<number>,
-        searchDataLookupParamsRoot,
-        conditionGroupsContainer : Experiment_ConditionGroupsContainer,
-        conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer,
-		experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData, 
-		singleProtein_ExpPage_CentralStateManagerObjectClass : SingleProtein_ExpPage_CentralStateManagerObjectClass,
-		experiment_DataPages_LoggedInUser_CommonObjectsFactory : Experiment_DataPages_LoggedInUser_CommonObjectsFactory
-		experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
-     }) {
+			dataPageStateManager_DataFrom_Server,
+			experimentId,
+			experimentName,
+			projectSearchIds,
+			searchDataLookupParamsRoot,
+			conditionGroupsContainer,
+			conditionGroupsDataContainer,
+			experimentConditions_GraphicRepresentation_PropsData,
+
+			proteinList_ExpPage_CentralStateManagerObjectClass,
+			generatedPeptideContents_UserSelections_StateObject,
+
+			singleProtein_ExpPage_CentralStateManagerObjectClass,
+			experiment_DataPages_LoggedInUser_CommonObjectsFactory,
+			experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
+		} : {
+			proteinSequenceVersionId : number,
+			proteinListItem : {name: string, description: string};
+
+			singleProteinCloseCallback: any,
+
+			loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder,
+			loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>,
+
+			dataPageStateManager_DataFrom_Server : DataPageStateManager,
+			experimentId : number,
+			experimentName : string,
+			projectSearchIds : Array<number>,
+			searchDataLookupParamsRoot : SearchDataLookupParameters_Root;
+			conditionGroupsContainer : Experiment_ConditionGroupsContainer,
+			conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer,
+			experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData,
+			proteinList_ExpPage_CentralStateManagerObjectClass : ProteinList_ExpPage_CentralStateManagerObjectClass;
+			singleProtein_ExpPage_CentralStateManagerObjectClass : SingleProtein_ExpPage_CentralStateManagerObjectClass,
+			generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
+			experiment_DataPages_LoggedInUser_CommonObjectsFactory : Experiment_DataPages_LoggedInUser_CommonObjectsFactory
+			experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
+		}) {
 
         this._proteinSequenceVersionId = proteinSequenceVersionId;
         this._proteinListItem = proteinListItem;
@@ -187,7 +199,10 @@ export class ProteinExperimentPage_Display_SingleProtein {
 		this._conditionGroupsDataContainer = conditionGroupsDataContainer;
         
 		this._experimentConditions_GraphicRepresentation_PropsData = experimentConditions_GraphicRepresentation_PropsData;
-		
+
+		this._proteinList_ExpPage_CentralStateManagerObjectClass = proteinList_ExpPage_CentralStateManagerObjectClass;
+		this._generatedPeptideContents_UserSelections_StateObject = generatedPeptideContents_UserSelections_StateObject
+
 		this._singleProtein_ExpPage_CentralStateManagerObjectClass = singleProtein_ExpPage_CentralStateManagerObjectClass;
 
 		this._experiment_DataPages_LoggedInUser_CommonObjectsFactory = experiment_DataPages_LoggedInUser_CommonObjectsFactory;
@@ -314,8 +329,8 @@ export class ProteinExperimentPage_Display_SingleProtein {
 		let proteinDescriptions : string = undefined
 
 		if ( this._proteinListItem ) {
-			proteinNames = this._proteinListItem.proteinNames
-			proteinDescriptions = this._proteinListItem.proteinDescriptions
+			proteinNames = this._proteinListItem.name
+			proteinDescriptions = this._proteinListItem.description
 		}
 
 		//  Create React component instance using React.createElement(...) so don't have to make this file .tsx
@@ -351,8 +366,8 @@ export class ProteinExperimentPage_Display_SingleProtein {
         //  Render to page:
 
 
-        const proteinNames = this._proteinListItem.proteinNames;
-		const proteinDescriptions = this._proteinListItem.proteinDescriptions;
+        const proteinNames = this._proteinListItem.name;
+		const proteinDescriptions = this._proteinListItem.description;
 		
 
 		const proteinSequenceData = this._loadedDataCommonHolder.get_proteinSequenceData_For_proteinSequenceVersionId({ proteinSequenceVersionId : this._proteinSequenceVersionId });
@@ -381,12 +396,17 @@ export class ProteinExperimentPage_Display_SingleProtein {
 			dataPageStateManager : this._dataPageStateManager_DataFrom_Server,
 			searchNamesMap_KeyProjectSearchId : searchNamesMap_KeyProjectSearchId ,
 			searchDataLookupParamsRoot : this._searchDataLookupParamsRoot ,
+
+			proteinList_ExpPage_CentralStateManagerObjectClass : this._proteinList_ExpPage_CentralStateManagerObjectClass,
+			generatedPeptideContents_UserSelections_StateObject : this._generatedPeptideContents_UserSelections_StateObject,
+
 			singleProtein_ExpPage_CentralStateManagerObjectClass : this._singleProtein_ExpPage_CentralStateManagerObjectClass,
 			modificationMass_UserSelections_StateObject : this._modificationMass_UserSelections_StateObject ,
 			reporterIonMass_UserSelections_StateObject : this._reporterIonMass_UserSelections_StateObject ,
 			peptideUnique_UserSelection_StateObject : this._peptideUnique_UserSelection_StateObject,
 			peptideSequence_UserSelections_StateObject : this._peptideSequence_UserSelections_StateObject ,
 			proteinSequenceWidget_StateObject : this._proteinSequenceWidget_StateObject ,
+
 			experiment_DataPages_LoggedInUser_CommonObjectsFactory : this._experiment_DataPages_LoggedInUser_CommonObjectsFactory,
 			experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : this._experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
 		};

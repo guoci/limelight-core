@@ -32,17 +32,19 @@ import {
 import { Experiment_ConditionGroupsContainer } from 'page_js/data_pages/experiment_data_pages_common/experiment_ConditionGroupsContainer_AndChildren_Classes';
 import { Experiment_ConditionGroupsDataContainer } from 'page_js/data_pages/experiment_data_pages_common/experiment_conditionGroupsDataContainer_Class';
 
-import { Create_GeneratedReportedPeptideListData_Result } from '../js/proteinExperimentPage_SingleProtein_Create_GeneratedReportedPeptideListData';
-
 import { createReportedPeptideDisplayData_DataTableDataObjects_GeneratedReportedPeptideListSection, GetDataTableDataObjects_GeneratedReportedPeptideListSection_Result } from 'page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/js/proteinExperimentPage_SingleProtein_GeneratedReportedPeptideListSection_Create_TableData';
 import {ProteinExpmntPage_ReportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds} from "page_js/data_pages/experiment_driven_data_pages/protein_exp__page/protein_exp_page_single_protein/reported_peptide_ids_for_display/proteinExpmntPage_getReportedPeptideIds_From_SelectionCriteria_AllProjectSearchIds";
+import {Create_GeneratedReportedPeptideListData_MultipleSearch_SingleProtein_Result} from "page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_multiple_search/protein_page_multiple_searches_single_protein/js/proteinPage_Display_MultipleSearches_SingleProtein_Create_GeneratedReportedPeptideListData";
+import {SearchDataLookupParameters_Root} from "page_js/data_pages/data_pages__common_data_classes/searchDataLookupParameters";
 
 /**
  * 
  */
 export interface ProteinExperimentPage_SingleProtein_GeneratedReportedPeptideListSection_Component_Props {
 
-    create_GeneratedReportedPeptideListData_Result : Create_GeneratedReportedPeptideListData_Result;  //  For displaying the peptide list in sub component
+    showProteins? : boolean
+
+    create_GeneratedReportedPeptideListData_Result : Create_GeneratedReportedPeptideListData_MultipleSearch_SingleProtein_Result;  //  For displaying the peptide list in sub component
 
     conditionGroupsContainer : Experiment_ConditionGroupsContainer;
     conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
@@ -50,7 +52,7 @@ export interface ProteinExperimentPage_SingleProtein_GeneratedReportedPeptideLis
     reportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds : ProteinExpmntPage_ReportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds
     proteinSequenceVersionId : number, 
     projectSearchIds : Array<number>,
-    searchDataLookupParamsRoot,
+    searchDataLookupParamsRoot: SearchDataLookupParameters_Root
     loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>,
     loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder,
     dataPageStateManager : DataPageStateManager
@@ -63,7 +65,7 @@ export interface ProteinExperimentPage_SingleProtein_GeneratedReportedPeptideLis
  */
 interface ProteinExperimentPage_SingleProtein_ReportedPeptideListSection_Component_State {
 
-    placeholder?
+    placeholder?: any
     // showUpdatingMessage? : boolean 
 }
 
@@ -195,6 +197,7 @@ export class ProteinExperimentPage_SingleProtein_GeneratedReportedPeptideListSec
                         loadedDataCommonHolder={ this.props.loadedDataCommonHolder }
                         dataPageStateManager={ this.props.dataPageStateManager }
                         showUpdatingMessage={ this.props.showUpdatingMessage }
+                        showProteins={ this.props.showProteins }
                     />
                 </div>
                 { updatingMessage }
@@ -213,7 +216,7 @@ export class ProteinExperimentPage_SingleProtein_GeneratedReportedPeptideListSec
  */
 export interface ReportedPeptideList_Component_Props {
 
-    create_GeneratedReportedPeptideListData_Result : Create_GeneratedReportedPeptideListData_Result;  //  For dispaying the peptide list in sub component
+    create_GeneratedReportedPeptideListData_Result : Create_GeneratedReportedPeptideListData_MultipleSearch_SingleProtein_Result;  //  For dispaying the peptide list in sub component
     
     conditionGroupsContainer : Experiment_ConditionGroupsContainer
     conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer
@@ -221,11 +224,12 @@ export interface ReportedPeptideList_Component_Props {
     reportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds : ProteinExpmntPage_ReportedPeptideIds_AndTheir_PSM_IDs__AllProjectSearchIds
     proteinSequenceVersionId : number, 
     projectSearchIds : Array<number>,
-    searchDataLookupParamsRoot,
+    searchDataLookupParamsRoot: SearchDataLookupParameters_Root
     loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>,
     loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
     dataPageStateManager : DataPageStateManager
-    showUpdatingMessage : boolean 
+    showUpdatingMessage : boolean
+    showProteins? : boolean  // For Peptide Page
 }
 
 /**
@@ -233,7 +237,7 @@ export interface ReportedPeptideList_Component_Props {
  */
 interface ReportedPeptideList_Component_State {
 
-    placeholder?
+    placeholder?: any
     // prev_reportedPeptideIds_AndTheir_PSM_IDs__SingleProjectSearchId_Map_KeyProjectSearchId? : Map<number, Array<number>>
     // showUpdatingMessage? : boolean 
 }
@@ -294,7 +298,8 @@ class ReportedPeptideList_Component extends React.Component< ReportedPeptideList
             searchDataLookupParamsRoot : this.props.searchDataLookupParamsRoot,
             loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds : this.props.loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds,
             loadedDataCommonHolder : this.props.loadedDataCommonHolder,
-            dataPageStateManager : this.props.dataPageStateManager
+            dataPageStateManager : this.props.dataPageStateManager,
+            showProteins : this.props.showProteins
         });
 
         const dataTable_RootTableObject : DataTable_RootTableObject = getDataTableDataObjects_Result.dataTable_RootTableObject;
@@ -302,7 +307,7 @@ class ReportedPeptideList_Component extends React.Component< ReportedPeptideList
         let noPeptidesMessage = undefined;
         let peptideListTable = undefined;
 
-        if ( this.props.create_GeneratedReportedPeptideListData_Result.numberOfReportedPeptides === 0 ) {
+        if ( this.props.create_GeneratedReportedPeptideListData_Result.peptideList_Length === 0 ) {
 
             noPeptidesMessage = (
                 <div className=" padding-for-room-for-child-table-show-hide-icon "> 
@@ -319,8 +324,8 @@ class ReportedPeptideList_Component extends React.Component< ReportedPeptideList
             );
         }
 
-        const numberOfPeptidesShown = this.props.create_GeneratedReportedPeptideListData_Result.numberOfReportedPeptides.toLocaleString();
-        const numberOfPSMsForReportedPeptidesShown = this.props.create_GeneratedReportedPeptideListData_Result.numberOfPsmsForReportedPeptides.toLocaleString();
+        const numberOfPeptidesShown = this.props.create_GeneratedReportedPeptideListData_Result.peptideList_Length.toLocaleString();
+        const numberOfPSMsForReportedPeptidesShown = this.props.create_GeneratedReportedPeptideListData_Result.numberOfPsmIds_NonRedundant_AcrossAllPeptides.toLocaleString();
 
         return (
             

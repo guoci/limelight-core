@@ -9,6 +9,7 @@
 import {reportWebErrorToServer} from "page_js/reportWebErrorToServer";
 import {ProteinViewPage_LoadedDataPerProjectSearchIdHolder} from "page_js/data_pages/project_search_ids_driven_pages/protein_page/protein_page_common/proteinView_LoadedDataPerProjectSearchIdHolder";
 import {webserviceCallStandardPost} from "page_js/webservice_call_common/webserviceCallStandardPost";
+import {variable_is_type_number_Check} from "page_js/variable_is_type_number_Check";
 
 /**
  * Load Reporter Ion Masses Unique within a Single Search
@@ -20,7 +21,7 @@ export const load_ReporterIonsUnique_ForSearch_SingleSearch_LoadTo_loadedDataPer
 
 } ) : Promise<unknown>{
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         try {
             const promise_getData = _get_ReporterIonsUnique_ForSearch_forProjectSearchId( { projectSearchId } );
 
@@ -31,13 +32,28 @@ export const load_ReporterIonsUnique_ForSearch_SingleSearch_LoadTo_loadedDataPer
                     // DB Results: reporterIonMassesUniqueList: result list item BigDecimal
                     // Store: Set <mass>
 
-                    const reporterIonMassesUniqueList_Local = ( reporterIonMassesUniqueList as any ) ;
+                    if ( ! ( reporterIonMassesUniqueList instanceof  Array ) ) {
+                        const msg = "reporterIonMassesUniqueList is not an Array";
+                        console.warn( msg + ". reporterIonMassesUniqueList: ", reporterIonMassesUniqueList )
+                        throw Error(msg);
+                    }
 
-                    const reporterIonMassesUniqueSet = new Set( reporterIonMassesUniqueList_Local )
+                    //  Validate each entry is a number
+
+                    for ( const entry of reporterIonMassesUniqueList ) {
+                        if ( ! variable_is_type_number_Check( entry ) ) {
+                            const msg = "entry in reporterIonMassesUniqueList is not a number";
+                            console.warn( msg + ". reporterIonMassesUniqueList: ", reporterIonMassesUniqueList )
+                            throw Error(msg);
+                        }
+                    }
+
+                    const reporterIonMassesUniqueSet = new Set( reporterIonMassesUniqueList )
 
                     loadedDataPerProjectSearchIdHolder.set_reporterIonMasses_ForSearch(reporterIonMassesUniqueSet);
 
                     resolve();
+
                 } catch( e ) {
                     reportWebErrorToServer.reportErrorObjectToServer( { errorException : e } );
                     throw e;
@@ -57,7 +73,7 @@ export const load_ReporterIonsUnique_ForSearch_SingleSearch_LoadTo_loadedDataPer
  *
  * result list item { String residue, BigDecimal mass }
  */
-const _get_ReporterIonsUnique_ForSearch_forProjectSearchId = function ( { projectSearchId } ) {
+const _get_ReporterIonsUnique_ForSearch_forProjectSearchId = function ( { projectSearchId }: { projectSearchId: number } ) {
 
     let promise = new Promise( function( resolve, reject ) {
         try {
@@ -75,7 +91,7 @@ const _get_ReporterIonsUnique_ForSearch_forProjectSearchId = function ( { projec
 
             promise_webserviceCallStandardPost.catch( () => { reject() }  );
 
-            promise_webserviceCallStandardPost.then( ({ responseData }) => {
+            promise_webserviceCallStandardPost.then( ({ responseData }: { responseData: any }) => {
                 try {
                     console.log("AJAX Call to get Get Reporter Ions - Unique Masses for this Search END, Now: " + new Date() );
 

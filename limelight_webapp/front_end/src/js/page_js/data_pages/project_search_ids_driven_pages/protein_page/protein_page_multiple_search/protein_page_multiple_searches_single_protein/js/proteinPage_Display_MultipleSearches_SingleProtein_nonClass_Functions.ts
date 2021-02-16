@@ -111,6 +111,9 @@ const _round_Selected_Variable_or_Open_ModMasses_IfNeed = function (
 			possiblyRounded_modifications_SelectedModMass = modificationMass_CommonRounding_ReturnNumber(modifications_SelectedModMass);
 		}
 
+		//  Special code to handle selected masses that round to the same value, choosing the 'ALL' if any of the values are type 'ALL'
+		//     This is required since previously didn't round for single search
+
 		const existing_RoundedEntry = new_rounded_Entries.get( possiblyRounded_modifications_SelectedModMass );
 		if ( existing_RoundedEntry ) {
 			if ( existing_RoundedEntry.selectionType === SingleProtein_Filter_SelectionType.ANY
@@ -176,6 +179,9 @@ const _round_Selected_Static_ModMasses_IfNeed = function (
 
 				modificationMass_UserSelections_StateObject.delete_StaticModification_Selected({ residueLetter, modMass })
 
+				//  Special code to handle selected masses that round to the same value, choosing the 'ALL' if any of the values are type 'ALL'
+				//     This is required since previously didn't round for single search
+
 				const existing_RoundedEntry = modificationMass_UserSelections_StateObject.get_StaticModification_Selected({ residueLetter, modMass : possiblyRounded_modifications_SelectedModMass });
 				if ( existing_RoundedEntry ) {
 					if ( existing_RoundedEntry.selectionType === SingleProtein_Filter_SelectionType.ANY
@@ -238,6 +244,9 @@ const round_Selected_ReporterIonMasses_IfNeed_reporterIonMass_UserSelections_Sta
 			possiblyRounded_reporterIons_SelectedModMass = reporterIonMass_CommonRounding_ReturnNumber(reporterIons_SelectedModMass);
 		}
 
+		//  Special code to handle selected masses that round to the same value, choosing the 'ALL' if any of the values are type 'ALL'
+		//     This is required since previously didn't round for single search
+
 		const existing_RoundedEntry = new_rounded_Entries.get( possiblyRounded_reporterIons_SelectedModMass );
 		if ( existing_RoundedEntry ) {
 			if ( existing_RoundedEntry.selectionType === SingleProtein_Filter_SelectionType.ANY
@@ -266,7 +275,12 @@ const round_Selected_ReporterIonMasses_IfNeed_reporterIonMass_UserSelections_Sta
 /**
  * 
  */
-const resize_OverlayHeight_BasedOnViewportHeight_MultipleSearch_SingleProtein = function({ singleProteinContainer_addedDivElementDOM }) {
+const resize_OverlayHeight_BasedOnViewportHeight_MultipleSearch_SingleProtein = function(
+	{
+		singleProteinContainer_addedDivElementDOM
+	} :{
+		singleProteinContainer_addedDivElementDOM: HTMLElement
+	}): void {
 
 	if ( ! singleProteinContainer_addedDivElementDOM ) {
 		// Exit if no overlay
@@ -312,17 +326,16 @@ const resize_OverlayHeight_BasedOnViewportHeight_MultipleSearch_SingleProtein = 
 /**
  * 
  */
-const update_Overlay_OnWindowResize_MultipleSearch_SingleProtein = function( params ) {
+const update_Overlay_OnWindowResize_MultipleSearch_SingleProtein = function(
+	{
+		singleProteinContainer_addedDivElementDOM
+	}: {
+		singleProteinContainer_addedDivElementDOM: HTMLElement
+	}
+) {
 
-	let singleProteinContainer_addedDivElementDOM = undefined;
 	let $view_single_protein_overlay_div = undefined;
 	let overlayWidth = undefined;
-
-	if ( params ) {
-		singleProteinContainer_addedDivElementDOM = params.singleProteinContainer_addedDivElementDOM;
-		$view_single_protein_overlay_div = params.$view_single_protein_overlay_div;
-		overlayWidth = params.overlayWidth;
-	}
 
 	if ( ! singleProteinContainer_addedDivElementDOM ) {
 		// Exit if no overlay
@@ -436,7 +449,7 @@ const loadDataForInitialOverlayShow_MultipleSearch_SingleProtein = function ({
 	generatedPeptideContents_UserSelections_StateObject
 } : {
 	getSearchSubGroupIds : boolean
-	proteinSequenceVersionId, 
+	proteinSequenceVersionId: number
 	projectSearchIds :  number[]
 	dataPageStateManager_DataFrom_Server : DataPageStateManager
 	loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
@@ -470,7 +483,7 @@ const loadDataForInitialOverlayShow_MultipleSearch_SingleProtein = function ({
 
 	//  Returned Promise
 
-	return new Promise( (resolve, reject) => {
+	return new Promise<void>( (resolve, reject) => {
 
 		promise_FirstRetrieval.catch( (reason) => { 
 			reject(reason) 
@@ -556,12 +569,12 @@ const _loadDataForInitialOverlayShow_FirstRetrieval = function ({
 	generatedPeptideContents_UserSelections_StateObject
 } : {
 	getSearchSubGroupIds : boolean
-	proteinSequenceVersionId, 
-	projectSearchIds, 
-	dataPageStateManager_DataFrom_Server, 
-	loadedDataCommonHolder, 
-	loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds,
-	searchDataLookupParamsRoot,
+	proteinSequenceVersionId: number
+	projectSearchIds :  number[]
+	dataPageStateManager_DataFrom_Server : DataPageStateManager
+	loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
+	loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds :  Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>
+	searchDataLookupParamsRoot : SearchDataLookupParameters_Root
 	reporterIonMass_UserSelections_StateObject : ReporterIonMass_UserSelections_StateObject
 	open_Modifications_Subpart_UserSelections_StateObject : ModificationMass_Subpart_Variable_Open_Modifications_UserSelections_StateObject
 	generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
@@ -669,12 +682,12 @@ const _loadDataForInitialOverlayShow_GetPer_projectSearchId = function ({
 	generatedPeptideContents_UserSelections_StateObject
 } : {
 	getSearchSubGroupIds : boolean
-	proteinSequenceVersionId, 
-	projectSearchId, 
-	loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds, 
-	loadedDataCommonHolder, 
-	dataPageStateManager_DataFrom_Server,
-	searchDataLookupParamsRoot
+	proteinSequenceVersionId: number
+	projectSearchId :  number
+	dataPageStateManager_DataFrom_Server : DataPageStateManager
+	loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
+	loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds :  Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>
+	searchDataLookupParamsRoot : SearchDataLookupParameters_Root
 	reporterIonMass_UserSelections_StateObject : ReporterIonMass_UserSelections_StateObject
 	open_Modifications_Subpart_UserSelections_StateObject : ModificationMass_Subpart_Variable_Open_Modifications_UserSelections_StateObject
 	generatedPeptideContents_UserSelections_StateObject : GeneratedPeptideContents_UserSelections_StateObject
@@ -809,7 +822,14 @@ const _loadDataForInitialOverlayShow_GetPer_projectSearchId = function ({
  * 
  * This can be (but not likely) called multiple times for the same search due to where it is currently called from.
  */
-const _populateStaticModificationsPositionsOnProteinSequence = function({ proteinSequenceVersionId, proteinSequenceString, loadedDataPerProjectSearchIdHolder }) {
+const _populateStaticModificationsPositionsOnProteinSequence = function(
+	{
+		proteinSequenceVersionId, proteinSequenceString, loadedDataPerProjectSearchIdHolder
+	}:{
+		proteinSequenceVersionId: number
+		proteinSequenceString: string
+		loadedDataPerProjectSearchIdHolder: ProteinViewPage_LoadedDataPerProjectSearchIdHolder
+	}) {
 
 	{
 		const staticModificationsOnProtein_KeyProteinSequenceVersionId = loadedDataPerProjectSearchIdHolder.get_staticModificationsOnProtein_KeyProteinSequenceVersionId();
@@ -899,7 +919,15 @@ const _populateStaticModificationsPositionsOnProteinSequence = function({ protei
  * 
  * @returns null or Promise
  */
-const _getPeptideSequencesForPeptideIds = function({ proteinSequenceVersionId, projectSearchIds, loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds, loadedDataCommonHolder }) {
+const _getPeptideSequencesForPeptideIds = function(
+	{
+		proteinSequenceVersionId, projectSearchIds, loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds, loadedDataCommonHolder
+	}: {
+		proteinSequenceVersionId: number
+		projectSearchIds :  number[]
+		loadedDataCommonHolder : ProteinView_LoadedDataCommonHolder
+		loadedDataPerProjectSearchIdHolder_ForAllProjectSearchIds :  Map<number, ProteinViewPage_LoadedDataPerProjectSearchIdHolder>
+	}) {
 
 	//   Map<PeptideId,{ reportedPeptideId, projectSearchId, peptideId }>
 	const peptideIdsToLoadSequencesForMap_Key_PeptideId = new Map();
