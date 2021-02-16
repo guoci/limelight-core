@@ -25,7 +25,7 @@ import {
     ExperimentConditions_GraphicRepresentation_SelectedCells_SelectedConditionsChanged_Callback_Definition,
     ExperimentConditions_GraphicRepresentation_SelectedCells_SelectedConditionsChanged_CallbackParams
 } from "page_js/data_pages/experiment_data_pages_common/experiment_SingleExperiment_ConditionsGraphicRepresentation_Selections";
-import {ConditionGroupsDataContainer} from "page_js/data_pages/experiment_data_pages_common/conditionGroupsDataContainer_Class";
+import { Experiment_ConditionGroupsDataContainer } from 'page_js/data_pages/experiment_data_pages_common/experiment_conditionGroupsDataContainer_Class';
 import {SearchNames_AsMap} from "page_js/data_pages/data_pages_common/dataPageStateManager";
 import {Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass} from "page_js/data_pages/experiment_data_pages_common/experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass";
 
@@ -38,7 +38,7 @@ export interface ModExperimentPage_Experiment_Name_Graphic_Component_Props {
     experimentId : number;
     experimentName : string;
     conditionGroupsContainer : Experiment_ConditionGroupsContainer;
-    conditionGroupsDataContainer : ConditionGroupsDataContainer;
+    conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
     searchNamesMap_KeyProjectSearchId : SearchNames_AsMap; // Map with key being project search id
     experimentConditions_GraphicRepresentation_PropsData : ExperimentConditions_GraphicRepresentation_PropsData
     experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass : Experiment_SelectedConditionIdsAndPaths_CentralStateManagerObjectClass
@@ -183,7 +183,7 @@ const _mainCell_getHoverContents_StandAlone = function({
                                                        } : {
     conditionIdPath : Array<number>,
     conditionGroupsContainer : Experiment_ConditionGroupsContainer;
-    conditionGroupsDataContainer : ConditionGroupsDataContainer;
+    conditionGroupsDataContainer : Experiment_ConditionGroupsDataContainer;
     searchNamesMap_KeyProjectSearchId  : SearchNames_AsMap
 }) {
     // console.log("_mainCell_getHoverContents_StandAlone")
