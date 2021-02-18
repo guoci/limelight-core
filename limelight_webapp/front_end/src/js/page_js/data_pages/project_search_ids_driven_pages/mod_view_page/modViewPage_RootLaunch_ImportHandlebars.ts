@@ -1,7 +1,7 @@
 /**
- * proteinViewPage_RootLaunch_ImportHandlebars.js
+ * modViewPage_RootLaunch_ImportHandlebars.ts
  *
- * For proteinView.jsp page
+ * For modView.jsp page
  *
  * Root Launch Javascript Import Handlebars
  *
@@ -18,9 +18,11 @@
 /**
  * Require Handlebars and dummy_template_template-bundle.js so that Handlebars is properly initialized for other uses of it
  */
-const Handlebars = require('handlebars/runtime');
-const _dummy_template_template_bundle =
-    require("../../../../../../../handlebars_templates_precompiled/dummy_template/dummy_template_template-bundle.js" );
-Handlebars.templates = _dummy_template_template_bundle;
+
+// @ts-ignore
+import Handlebars = require('handlebars/runtime');
+
+// @ts-ignore
+import _dummy_template_template_bundle = require("../../../../../../../handlebars_templates_precompiled/dummy_template/dummy_template_template-bundle.js" );
 
 export { Handlebars, _dummy_template_template_bundle }
